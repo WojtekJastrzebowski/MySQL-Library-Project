@@ -24,6 +24,8 @@ int main() {
         sql::Connection* con;
         sql::Statement* stmt;
         sql::PreparedStatement* pstmt;
+        sql::ResultSet* res;
+
         driver = get_driver_instance();
         con = driver->connect(server, username, password);
 //////////////Here, enter your Schema name, which you created earlier in your DB////////////////////////////////////
@@ -72,11 +74,24 @@ int main() {
                     cin >> username1;
                     cout << "Your password: ";
                     cin >> password1;
+                        stmt = con->createStatement();
+                        res = stmt->executeQuery("SELECT username, password FROM employee ORDER BY name ASC");
+                        while (res->next()) {
 
+                            cout << "username = " << res->getString("username") << endl;
+                            cout << "password = " << res->getString("password") << endl;
 
-                    pstmt = con->prepareStatement("SELECT * FROM employee WHERE username = '" + username1 + "%' AND password = '" + password1 + "%'");
-                    pstmt->execute();
-                        
+                            string usernameDB = res->getString("username");
+                            string passwordDB = res->getString("password");
+
+                            if (usernameDB == username1 && passwordDB == password1) {
+                                cout << "Success!\n\n";
+                                goto loop1;
+                            }
+                        }
+                        delete res;
+                        delete stmt;
+
                     goto loop1;
                 case 2:
                     cout << "Name: ";
