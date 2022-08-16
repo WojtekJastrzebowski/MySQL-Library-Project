@@ -77,15 +77,14 @@ int main() {
                         stmt = con->createStatement();
                         res = stmt->executeQuery("SELECT username, password FROM employee ORDER BY name ASC");
                         while (res->next()) {
-                            cout << "username = " << res->getString("username") << endl;
-                            cout << "password = " << res->getString("password") << endl;
                             string usernameDB = res->getString("username");
                             string passwordDB = res->getString("password");
                             if (usernameDB == username1 && passwordDB == password1) {
-                                cout << "Success!\n\n";
+                                cout << "\nLogin successful..!\n\n";
                                 goto libraryDB;
-                            }
+                            }                     
                         }
+                        cout << "\nLogin failed..!\n\n";
                         delete res;
                         delete stmt;
                     goto loop1;
@@ -121,7 +120,7 @@ int main() {
                     pstmt->setString(4, emcountry);
                     pstmt->execute();
 
-                    cout << "Registration successful..!\n\n";
+                    cout << "\nRegistration successful..!\n\n";
                     goto loop1;
                 case 0:
                     system("pause");
@@ -137,9 +136,15 @@ int main() {
             goto loop1;
         }
     libraryDB:
-        cout << "Welcome to libraryDB. Please choose action:\n\n";
-        cout << "1. AddBook\n";
-        cout << "2. RemoveBook\n";
+        cout << "LibraryDB. Please choose action:\n\n";
+        cout << "1. Add New Book Rental\n";
+        cout << "2. Add New Book Return\n";
+        cout << "3. Check Book Availability\n";
+        cout << "4. Check Customer Status\n";
+        cout << "5. Check Book Return\n";
+        cout << "6. Check Book Rentals\n";
+        cout << "7. Add Book\n";
+        cout << "8. Remove Book\n";
         cout << "0. Logout\n\n";
         cout << "Choose option: ";
         cin >> optioncheck1;
