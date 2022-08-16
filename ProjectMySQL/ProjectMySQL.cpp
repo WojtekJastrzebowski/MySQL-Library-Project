@@ -47,7 +47,7 @@ int main() {
         int count = 0, option1;
         string check1;
         
-        loop1:
+    loop1:
 
         cout << "Welcome to libraryDB. Please logIn or Register as employee:\n\n";
         cout << "1. LogIn\n"; 
@@ -77,21 +77,17 @@ int main() {
                         stmt = con->createStatement();
                         res = stmt->executeQuery("SELECT username, password FROM employee ORDER BY name ASC");
                         while (res->next()) {
-
                             cout << "username = " << res->getString("username") << endl;
                             cout << "password = " << res->getString("password") << endl;
-
                             string usernameDB = res->getString("username");
                             string passwordDB = res->getString("password");
-
                             if (usernameDB == username1 && passwordDB == password1) {
                                 cout << "Success!\n\n";
-                                goto loop1;
+                                goto libraryDB;
                             }
                         }
                         delete res;
                         delete stmt;
-
                     goto loop1;
                 case 2:
                     cout << "Name: ";
@@ -132,7 +128,7 @@ int main() {
                     return 0;
                 default:
                     cout << "The wrong parameter has been specified!\n\n";      
-                    break;
+                    goto loop1;
                 }
             } while (option1);
         }
@@ -140,28 +136,43 @@ int main() {
             cout << "The wrong parameter has been specified!\n\n";
             goto loop1;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    libraryDB:
+        cout << "Welcome to libraryDB. Please choose action:\n\n";
+        cout << "1. AddBook\n";
+        cout << "2. RemoveBook\n";
+        cout << "0. Logout\n\n";
+        cout << "Choose option: ";
+        cin >> optioncheck1;
+        for (int i = 0; i < optioncheck1.length(); i++)
+        {
+            if (isdigit(optioncheck1[i]) == false)
+            {
+                option1 = 1;
+                break;
+            }
+            else
+                option1 = 0;
+        }
+        if (count == 0) {
+            int option1 = stoi(optioncheck1);
+            do {
+                switch (option1) {
+                case 1:
+                    goto libraryDB;
+                case 2:
+                    goto libraryDB;
+                case 0:
+                    goto loop1;
+                default:
+                    cout << "The wrong parameter has been specified!\n\n";
+                    goto libraryDB;
+                }
+            } while (option1);
+        }
+        else {
+            cout << "The wrong parameter has been specified!\n\n";
+            goto libraryDB;
+        }
         delete con;
     }
     catch (sql::SQLException& e){
