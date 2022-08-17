@@ -11,6 +11,9 @@
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
 #include <cppconn/prepared_statement.h>
+
+#include "sha256.h"
+#include "sha256.cpp"
 using namespace std;
 //////////////Enter your DB data here////////////////////////////////////////////////////////////////////
 const string server = "tcp://127.0.0.1:3306";
@@ -25,6 +28,7 @@ int main() {
         sql::Statement* stmt;
         sql::PreparedStatement* pstmt;
         sql::ResultSet* res;
+        SHA256 sha256;
 
         driver = get_driver_instance();
         con = driver->connect(server, username, password);
@@ -45,7 +49,7 @@ int main() {
 
         string optioncheck1, emname, emposition, emadress, emzip, emcity, emcountry, username, username1, password, password1;
         int count = 0, option1;
-        string check1;
+        string hashpw, hashpw1;
         string isbn, title, author, publisher, genre;
         int quantity_available;
         
@@ -76,12 +80,15 @@ int main() {
                     cin >> username1;
                     cout << "Your password: ";
                     cin >> password1;
+
+                    hashpw1 = sha256(password1);
+
                         stmt = con->createStatement();
                         res = stmt->executeQuery("SELECT username, password FROM employee ORDER BY name ASC");
                         while (res->next()) {
                             string usernameDB = res->getString("username");
                             string passwordDB = res->getString("password");
-                            if (usernameDB == username1 && passwordDB == password1) {
+                            if (usernameDB == username1 && passwordDB == hashpw1) {
                                 cout << "\nLogin successful..!\n\n";
                                 goto libraryDB;
                             }                     
@@ -107,12 +114,14 @@ int main() {
                     cin >> username;
                     cout << "Choose your password: ";
                     cin >> password;
+  
+                    hashpw = sha256(password);
 
                     pstmt = con->prepareStatement("INSERT INTO employee(name, position, username, password) VALUES(?,?,?,?)");
                     pstmt->setString(1, emname);
                     pstmt->setString(2, emposition);
                     pstmt->setString(3, username);
-                    pstmt->setString(4, password);
+                    pstmt->setString(4, hashpw);
                     pstmt->execute();
 
                     pstmt = con->prepareStatement("INSERT INTO employee_adress(adress, zipcode, city, country) VALUES(?,?,?,?)");
