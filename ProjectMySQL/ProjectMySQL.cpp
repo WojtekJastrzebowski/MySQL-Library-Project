@@ -14,12 +14,20 @@
 
 #include "sha256.h"
 #include "sha256.cpp"
+
+#include "functions.h"
+
 using namespace std;
 //////////////Enter your DB data here////////////////////////////////////////////////////////////////////
 const string server = "tcp://127.0.0.1:3306";
 const string username = "root";
 const string password = "";
 //////////////Main function Start////////////////////////////////////////////////////////////////////////
+
+void Message() {
+    cout << "\nWrong parameters provided..!\nOperation has failed\n\n";
+}
+
 int main() {
 //////////////Attempt to connection with DB//////////////////////////////////////////////////////////////
     try {
@@ -50,28 +58,17 @@ int main() {
         string optioncheck1, emname, emposition, emadress, emzip, emcity, emcountry, username, username1, password, password1;
         int count = 0, option1;
         string hashpw, hashpw1;
-        string isbn, title, author, publisher, genre;
-        int quantity_available;
-        
-    loop1:
+        string isbn, title, author, publisher, genre, quantity_available;
+        int quantity_available1 = 0;
 
+    loop1:
         cout << "Welcome to libraryDB. Please logIn or Register as employee:\n\n";
         cout << "1. LogIn\n"; 
         cout << "2. Register\n";
         cout << "0. Exit\n\n";
         cout << "Choose option: ";
         cin >> optioncheck1;
-        for (int i = 0; i < optioncheck1.length(); i++)
-        {
-            if (isdigit(optioncheck1[i]) == false)
-            {
-                count = 1;
-                break;
-            }
-            else
-                count = 0;
-        }
-        if (count == 0) {
+        if (IntCheck(optioncheck1)) {
             int option1 = stoi(optioncheck1);
             do {
                 switch (option1) {
@@ -80,9 +77,7 @@ int main() {
                     cin >> username1;
                     cout << "Your password: ";
                     cin >> password1;
-
                     hashpw1 = sha256(password1);
-
                         stmt = con->createStatement();
                         res = stmt->executeQuery("SELECT username, password FROM employee ORDER BY name ASC");
                         while (res->next()) {
@@ -98,52 +93,76 @@ int main() {
                         delete stmt;
                     goto loop1;
                 case 2:
-                    cout << "Name: ";
+                    cout << "Name (required): ";
                     cin >> emname;
-                    cout << "Your position: ";
+                    if (!IsFilled(emname)) {Message(); goto loop1; }
+                    cout << "Your position (required): ";
                     cin >> emposition;
-                    cout << "Adress: ";
+                    if (!IsFilled(emposition)) {Message(); goto loop1; }
+                    cout << "Adress (required): ";
                     cin >> emadress;
-                    cout << "ZipCode: ";
+                    if (!IsFilled(emadress)) {Message(); goto loop1; }
+                    cout << "ZipCode (required): ";
                     cin >> emzip;
-                    cout << "City: ";
+                    if (!IsFilled(emzip)) {Message(); goto loop1; }
+                    cout << "City (required): ";
                     cin >> emcity;
-                    cout << "Country: ";
+                    if (!IsFilled(emcity)) {Message(); goto loop1; }
+                    cout << "Country (required): ";
                     cin >> emcountry;
-                    cout << "Choose your username: ";
+                    if (!IsFilled(emcountry)) {Message(); goto loop1; }
+                    cout << "Choose your username (8-20)(required): ";
                     cin >> username;
-                    cout << "Choose your password: ";
+                    cout << "Choose your password (8-20)(required): ";
                     cin >> password;
-  
-                    hashpw = sha256(password);
 
-                    pstmt = con->prepareStatement("INSERT INTO employee(name, position, username, password) VALUES(?,?,?,?)");
-                    pstmt->setString(1, emname);
-                    pstmt->setString(2, emposition);
-                    pstmt->setString(3, username);
-                    pstmt->setString(4, hashpw);
-                    pstmt->execute();
+                    if(IsCorrect(username, password)){
+                        hashpw = sha256(password);
 
-                    pstmt = con->prepareStatement("INSERT INTO employee_adress(adress, zipcode, city, country) VALUES(?,?,?,?)");
-                    pstmt->setString(1, emadress);
-                    pstmt->setString(2, emzip);
-                    pstmt->setString(3, emcity);
-                    pstmt->setString(4, emcountry);
-                    pstmt->execute();
+                        stmt = con->createStatement();
+                        res = stmt->executeQuery("SELECT username FROM employee ORDER BY name ASC");
+                        while (res->next()) {
+                            string usernameDB = res->getString("username"); 
+                            if (usernameDB == username) {
+                                cout << "\nRegistration failed..!\nUsername already in database..!\n\n";
+                                goto libraryDB;
+                            }
+                        }
+                        delete res;
+                        delete stmt;
 
-                    cout << "\nRegistration successful..!\n\n";
-                    goto loop1;
+                        pstmt = con->prepareStatement("INSERT INTO employee(name, position, username, password) VALUES(?,?,?,?)");
+                        pstmt->setString(1, emname);
+                        pstmt->setString(2, emposition);
+                        pstmt->setString(3, username);
+                        pstmt->setString(4, hashpw);
+                        pstmt->execute();
+
+                        pstmt = con->prepareStatement("INSERT INTO employee_adress(adress, zipcode, city, country) VALUES(?,?,?,?)");
+                        pstmt->setString(1, emadress);
+                        pstmt->setString(2, emzip);
+                        pstmt->setString(3, emcity);
+                        pstmt->setString(4, emcountry);
+                        pstmt->execute();
+
+                        cout << "\nRegistration successful..!\n\n";
+                        goto loop1;
+                    }
+                    else {
+                        Message();
+                        goto loop1;
+                    }
                 case 0:
                     system("pause");
                     return 0;
                 default:
-                    cout << "The wrong parameter has been specified!\n\n";      
+                    Message();
                     goto loop1;
                 }
             } while (option1);
         }
         else {
-            cout << "The wrong parameter has been specified!\n\n";
+            Message();
             goto loop1;
         }
     libraryDB:
@@ -160,17 +179,8 @@ int main() {
         cout << "0. Logout\n\n";
         cout << "Choose option: ";
         cin >> optioncheck1;
-        for (int i = 0; i < optioncheck1.length(); i++)
-        {
-            if (isdigit(optioncheck1[i]) == false)
-            {
-                count = 1;
-                break;
-            }
-            else
-                count = 0;
-        }
-        if (count == 0) {
+
+        if (IntCheck(optioncheck1)) {
             int option1 = stoi(optioncheck1);
             do {
                 switch (option1) {
@@ -203,30 +213,40 @@ int main() {
                 case 7:              
                     cout << "Add new book: \n";
                     cin.ignore();
-                    cout << "ISBN: ";
+                    cout << "ISBN (required): ";
                     getline(cin, isbn);
-                    cout << "Title: ";
+                    if (!IsFilled(isbn)) {Message(); goto libraryDB; }
+                    cout << "Title (required): ";
                     getline(cin, title);
-                    cout << "Author: ";
+                    if (!IsFilled(title)) {Message(); goto libraryDB; }
+                    cout << "Author (required): ";
                     getline(cin, author);
-                    cout << "Publisher: ";
+                    if (!IsFilled(author)) {Message(); goto libraryDB; }
+                    cout << "Publisher (required): ";
                     getline(cin, publisher);
-                    cout << "Genre: ";
+                    if (!IsFilled(publisher)) {Message(); goto libraryDB; }
+                    cout << "Genre (required): ";
                     getline(cin, genre);
-                    
-                    cout << "Quantity: ";
-                    cin >> quantity_available;
-                    
+                    if (!IsFilled(genre)) {Message(); goto libraryDB; }
+                    cout << "Quantity (required): ";
+                    getline(cin, quantity_available);
+                    if (!IsFilled(quantity_available)) { Message(); goto libraryDB; }
+                    if (IntCheck(quantity_available)) {
+                        quantity_available1 = stoi(quantity_available);
+                    }
+                    else {
+                        Message(); goto libraryDB;
+                    }
                     pstmt = con->prepareStatement("INSERT INTO book(isbn, title, author, publisher, genre, quantity_available) VALUES(?,?,?,?,?,?)");
                     pstmt->setString(1, isbn);
                     pstmt->setString(2, title);
                     pstmt->setString(3, author);
                     pstmt->setString(4, publisher);
                     pstmt->setString(5, genre);
-                    pstmt->setInt(6, quantity_available);
+                    pstmt->setInt(6, quantity_available1);
                     pstmt->execute();
 
-                    cout << "\nThe addition of the book was successful..!\n";
+                    cout << "\nThe addition of the book was successful..!\n\n";
                     goto libraryDB;
                 case 8:
                     //output all data (name etc)
@@ -243,13 +263,13 @@ int main() {
                 case 0:
                     goto loop1;
                 default:
-                    cout << "The wrong parameter has been specified!\n\n";
+                    Message();
                     goto libraryDB;
                 }
             } while (option1);
         }
         else {
-            cout << "The wrong parameter has been specified!\n\n";
+            Message();
             goto libraryDB;
         }
         delete con;
