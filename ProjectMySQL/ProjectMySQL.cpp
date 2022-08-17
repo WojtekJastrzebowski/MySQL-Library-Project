@@ -166,16 +166,30 @@ int main() {
             do {
                 switch (option1) {
                 case 1:
+                    //add data
+                    //pstmt exec
+                    //done
                     goto libraryDB;
                 case 2:
+                    //add data
+                    //pstmt exec
+                    //done
                     goto libraryDB;
                 case 3:
+                    //1.list all data
+                    //2.choose book
                     goto libraryDB;
                 case 4:
+                    //1.list all data
+                    //2.search?
                     goto libraryDB;
                 case 5:
+                    //1.list all data
+                    //2.search?
                     goto libraryDB;
                 case 6:
+                    //1.list all data
+                    //2.search?
                     goto libraryDB;
                 case 7:              
                     cout << "Add new book: \n";
@@ -206,8 +220,16 @@ int main() {
                     cout << "\nThe addition of the book was successful..!\n";
                     goto libraryDB;
                 case 8:
+                    //output all data (name etc)
+                    //input name of book
+                    //modify alt->input new, for quantity +/- int
+                    //confirm
                     goto libraryDB; 
                 case 9:
+                    //output all data (name etc)
+                    //input name of book
+                    //delete
+                    //confirm
                         goto loop1;
                 case 0:
                     goto loop1;
