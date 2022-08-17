@@ -38,7 +38,7 @@ int main() {
         stmt->execute("CREATE TABLE IF NOT EXISTS employee_adress (employee_adress_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, adress VARCHAR(50) NOT NULL, zipcode VARCHAR(25) NOT NULL, city VARCHAR(35) NOT NULL, country VARCHAR(25) NOT NULL);");  
         stmt->execute("CREATE TABLE IF NOT EXISTS customer (customer_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(50) NOT NULL, registration_date DATE NOT NULL, status_toomuch VARCHAR(25), status_toolong VARCHAR(25));");
         stmt->execute("CREATE TABLE IF NOT EXISTS customer_adress (customer_adress_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, adress VARCHAR(50) NOT NULL, zipcode VARCHAR(25) NOT NULL, city VARCHAR(35) NOT NULL, country VARCHAR(25) NOT NULL);");
-        stmt->execute("CREATE TABLE IF NOT EXISTS book (book_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, isbn VARCHAR(25) NOT NULL, title VARCHAR(50) NOT NULL, author VARCHAR(50) NOT NULL, publisher VARCHAR(25) NOT NULL, genre VARCHAR(25) NOT NULL, quantity_available INT(10) NOT NULL, status VARCHAR(25) NOT NULL);");
+        stmt->execute("CREATE TABLE IF NOT EXISTS book (book_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, isbn VARCHAR(25) NOT NULL, title VARCHAR(50) NOT NULL, author VARCHAR(50) NOT NULL, publisher VARCHAR(25) NOT NULL, genre VARCHAR(25) NOT NULL, quantity_available INT(10) NOT NULL, status VARCHAR(25));");
         stmt->execute("CREATE TABLE IF NOT EXISTS rental_status (rental_status_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, rent_customer_ID INT(10) NOT NULL, rent_book_ID INT(10) NOT NULL, rent_date DATE NOT NULL, CONSTRAINT FOREIGN KEY (rent_book_ID) REFERENCES book (book_ID), CONSTRAINT FOREIGN KEY (rent_customer_ID) REFERENCES customer (customer_ID));");
         stmt->execute("CREATE TABLE IF NOT EXISTS return_status (return_status_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, return_customer_ID INT(10) NOT NULL, return_book_ID INT(10) NOT NULL, return_date DATE NOT NULL, CONSTRAINT FOREIGN KEY (return_book_ID) REFERENCES book (book_ID), CONSTRAINT FOREIGN KEY (return_customer_ID) REFERENCES rental_status (rent_customer_ID));");
         delete stmt;
@@ -46,6 +46,8 @@ int main() {
         string optioncheck1, emname, emposition, emadress, emzip, emcity, emcountry, username, username1, password, password1;
         int count = 0, option1;
         string check1;
+        string isbn, title, author, publisher, genre;
+        int quantity_available;
         
     loop1:
 
@@ -59,11 +61,11 @@ int main() {
         {
             if (isdigit(optioncheck1[i]) == false)
             {
-                option1 = 1;
+                count = 1;
                 break;
             }
             else
-                option1 = 0;
+                count = 0;
         }
         if (count == 0) {
             int option1 = stoi(optioncheck1);
@@ -144,7 +146,8 @@ int main() {
         cout << "5. Check Book Return\n";
         cout << "6. Check Book Rentals\n";
         cout << "7. Add Book\n";
-        cout << "8. Remove Book\n";
+        cout << "8. Modify Book\n";
+        cout << "9. Remove Book\n";
         cout << "0. Logout\n\n";
         cout << "Choose option: ";
         cin >> optioncheck1;
@@ -152,11 +155,11 @@ int main() {
         {
             if (isdigit(optioncheck1[i]) == false)
             {
-                option1 = 1;
+                count = 1;
                 break;
             }
             else
-                option1 = 0;
+                count = 0;
         }
         if (count == 0) {
             int option1 = stoi(optioncheck1);
@@ -166,6 +169,46 @@ int main() {
                     goto libraryDB;
                 case 2:
                     goto libraryDB;
+                case 3:
+                    goto libraryDB;
+                case 4:
+                    goto libraryDB;
+                case 5:
+                    goto libraryDB;
+                case 6:
+                    goto libraryDB;
+                case 7:              
+                    cout << "Add new book: \n";
+                    cin.ignore();
+                    cout << "ISBN: ";
+                    getline(cin, isbn);
+                    cout << "Title: ";
+                    getline(cin, title);
+                    cout << "Author: ";
+                    getline(cin, author);
+                    cout << "Publisher: ";
+                    getline(cin, publisher);
+                    cout << "Genre: ";
+                    getline(cin, genre);
+                    
+                    cout << "Quantity: ";
+                    cin >> quantity_available;
+                    
+                    pstmt = con->prepareStatement("INSERT INTO book(isbn, title, author, publisher, genre, quantity_available) VALUES(?,?,?,?,?,?)");
+                    pstmt->setString(1, isbn);
+                    pstmt->setString(2, title);
+                    pstmt->setString(3, author);
+                    pstmt->setString(4, publisher);
+                    pstmt->setString(5, genre);
+                    pstmt->setInt(6, quantity_available);
+                    pstmt->execute();
+
+                    cout << "\nThe addition of the book was successful..!\n";
+                    goto libraryDB;
+                case 8:
+                    goto libraryDB; 
+                case 9:
+                        goto loop1;
                 case 0:
                     goto loop1;
                 default:
