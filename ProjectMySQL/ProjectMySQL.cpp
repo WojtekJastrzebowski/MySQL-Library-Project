@@ -16,6 +16,7 @@
 #include "sha256.cpp"
 
 #include "functions.h"
+#include "date.h"
 
 using namespace std;
 //////////////Enter your DB data here////////////////////////////////////////////////////////////////////
@@ -48,18 +49,16 @@ int main() {
         stmt->execute("CREATE TABLE IF NOT EXISTS library_adress (library_adress_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, adress VARCHAR(50) NOT NULL, zipcode VARCHAR(25) NOT NULL, city VARCHAR(35) NOT NULL, country VARCHAR(25) NOT NULL);");
         stmt->execute("CREATE TABLE IF NOT EXISTS employee (employee_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(50) NOT NULL, position VARCHAR(50) NOT NULL, username VARCHAR(50) NOT NULL, password VARCHAR(64) NOT NULL);");        
         stmt->execute("CREATE TABLE IF NOT EXISTS employee_adress (employee_adress_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, adress VARCHAR(50) NOT NULL, zipcode VARCHAR(25) NOT NULL, city VARCHAR(35) NOT NULL, country VARCHAR(25) NOT NULL);");  
-        stmt->execute("CREATE TABLE IF NOT EXISTS customer (customer_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(50) NOT NULL, registration_date DATE NOT NULL, status_toomuch VARCHAR(25), status_toolong VARCHAR(25));");
+        stmt->execute("CREATE TABLE IF NOT EXISTS customer (customer_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(50) NOT NULL, registration_date VARCHAR(25) NOT NULL, status_toomuch VARCHAR(25), status_toolong VARCHAR(25));");
         stmt->execute("CREATE TABLE IF NOT EXISTS customer_adress (customer_adress_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, adress VARCHAR(50) NOT NULL, zipcode VARCHAR(25) NOT NULL, city VARCHAR(35) NOT NULL, country VARCHAR(25) NOT NULL);");
         stmt->execute("CREATE TABLE IF NOT EXISTS book (book_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, isbn VARCHAR(25) NOT NULL, title VARCHAR(50) NOT NULL, author VARCHAR(50) NOT NULL, publisher VARCHAR(25) NOT NULL, genre VARCHAR(25) NOT NULL, quantity_available INT(10) NOT NULL, status VARCHAR(25));");
         stmt->execute("CREATE TABLE IF NOT EXISTS rental_status (rental_status_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, rent_customer_ID INT(10) NOT NULL, rent_book_ID INT(10) NOT NULL, rent_date DATE NOT NULL, CONSTRAINT FOREIGN KEY (rent_book_ID) REFERENCES book (book_ID), CONSTRAINT FOREIGN KEY (rent_customer_ID) REFERENCES customer (customer_ID));");
         stmt->execute("CREATE TABLE IF NOT EXISTS return_status (return_status_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, return_customer_ID INT(10) NOT NULL, return_book_ID INT(10) NOT NULL, return_date DATE NOT NULL, CONSTRAINT FOREIGN KEY (return_book_ID) REFERENCES book (book_ID), CONSTRAINT FOREIGN KEY (return_customer_ID) REFERENCES rental_status (rent_customer_ID));");
         delete stmt;
 
-        string optioncheck1, emname, emposition, emadress, emzip, emcity, emcountry, username, username1, password, password1;
-        int count = 0, option1;
-        string hashpw, hashpw1;
-        string isbn, title, author, publisher, genre, quantity_available;
-        int quantity_available1 = 0;
+        string optioncheck1, emname, emposition, emadress, emzip, emcity, emcountry, cuname, cuadress, cuzip, cucity, cucountry, username, username1, password,
+               password1, hashpw, hashpw1, isbn, title, author, publisher, genre, quantity_available, date;
+        int count = 0, option1 = 0, quantity_available1 = 0;
 
     loop1:
         cout << "Welcome to libraryDB. Please logIn or Register as employee:\n\n";
@@ -93,7 +92,7 @@ int main() {
                         delete stmt;
                     goto loop1;
                 case 2:
-                    cout << "Name (required): ";
+                    cout << "Registration of a new employee\n\nName (required): ";
                     cin >> emname;
                     if (!IsFilled(emname)) {Message(); goto loop1; }
                     cout << "Your position (required): ";
@@ -115,10 +114,7 @@ int main() {
                     cin >> username;
                     cout << "Choose your password (8-20)(required): ";
                     cin >> password;
-
                     if(IsCorrect(username, password)){
-                        hashpw = sha256(password);
-
                         stmt = con->createStatement();
                         res = stmt->executeQuery("SELECT username FROM employee ORDER BY name ASC");
                         while (res->next()) {
@@ -130,21 +126,20 @@ int main() {
                         }
                         delete res;
                         delete stmt;
-
+                        hashpw = sha256(password);
                         pstmt = con->prepareStatement("INSERT INTO employee(name, position, username, password) VALUES(?,?,?,?)");
                         pstmt->setString(1, emname);
                         pstmt->setString(2, emposition);
                         pstmt->setString(3, username);
                         pstmt->setString(4, hashpw);
                         pstmt->execute();
-
                         pstmt = con->prepareStatement("INSERT INTO employee_adress(adress, zipcode, city, country) VALUES(?,?,?,?)");
                         pstmt->setString(1, emadress);
                         pstmt->setString(2, emzip);
                         pstmt->setString(3, emcity);
                         pstmt->setString(4, emcountry);
                         pstmt->execute();
-
+                        delete pstmt;
                         cout << "\nRegistration successful..!\n\n";
                         goto loop1;
                     }
@@ -173,9 +168,10 @@ int main() {
         cout << "4. Check Customer Status\n";
         cout << "5. Check Book Return\n";
         cout << "6. Check Book Rentals\n";
-        cout << "7. Add Book\n";
-        cout << "8. Modify Book\n";
-        cout << "9. Remove Book\n";
+        cout << "7. Add Customer\n";
+        cout << "8. Add Book\n";
+        cout << "9. Modify Book\n";
+        cout << "10. Remove Book\n";
         cout << "0. Logout\n\n";
         cout << "Choose option: ";
         cin >> optioncheck1;
@@ -210,7 +206,39 @@ int main() {
                     //1.list all data
                     //2.search?
                     goto libraryDB;
-                case 7:              
+                case 7:
+                    cout << "Registration of a new customer: \n";
+                    cin.ignore();
+                    cout << "Name (required): ";
+                    getline(cin, cuname);
+                    if (!IsFilled(cuname)) { Message(); goto libraryDB; }
+                    cout << "Adress (required): ";
+                    getline(cin, cuadress);
+                    if (!IsFilled(cuadress)) { Message(); goto libraryDB; }
+                    cout << "ZipCode (required): ";
+                    getline(cin, cuzip);
+                    if (!IsFilled(cuzip)) { Message(); goto libraryDB; }
+                    cout << "City (required): ";
+                    getline(cin, cucity);
+                    if (!IsFilled(cucity)) { Message(); goto libraryDB; }
+                    cout << "Country (required): ";
+                    getline(cin, cucountry);
+                    if (!IsFilled(cucountry)) { Message(); goto libraryDB; }
+                    date = date::format("%F %T", chrono::system_clock::now());
+                    pstmt = con->prepareStatement("INSERT INTO customer(name, registration_date) VALUES(?,?)");
+                    pstmt->setString(1, cuname);
+                    pstmt->setString(2, date);
+                    pstmt->execute();
+                    pstmt = con->prepareStatement("INSERT INTO customer_adress(adress, zipcode, city, country) VALUES(?,?,?,?)");
+                    pstmt->setString(1, cuadress);
+                    pstmt->setString(2, cuzip);
+                    pstmt->setString(3, cucity);
+                    pstmt->setString(4, cucountry);
+                    pstmt->execute();
+                    delete pstmt;
+                    cout << "\nCustomer registration successful..!\n\n";
+                    goto libraryDB;
+                case 8:              
                     cout << "Add new book: \n";
                     cin.ignore();
                     cout << "ISBN (required): ";
@@ -237,6 +265,22 @@ int main() {
                     else {
                         Message(); goto libraryDB;
                     }
+                    stmt = con->createStatement();
+                    res = stmt->executeQuery("SELECT isbn, title FROM book ORDER BY name ASC");
+                    while (res->next()) {
+                        string isbnDB = res->getString("isbn");
+                        string titleDB = res->getString("title");
+                        if (isbnDB == isbn) {
+                            cout << "\nOperation failed..!\nISBN already in database..!\n\n";
+                            goto libraryDB;
+                        }
+                        if (titleDB == title) {
+                            cout << "\nOperation failed..!\nTitle already in database..!\n\n";
+                            goto libraryDB;
+                        }
+                    }
+                    delete res;
+                    delete stmt;
                     pstmt = con->prepareStatement("INSERT INTO book(isbn, title, author, publisher, genre, quantity_available) VALUES(?,?,?,?,?,?)");
                     pstmt->setString(1, isbn);
                     pstmt->setString(2, title);
@@ -245,16 +289,16 @@ int main() {
                     pstmt->setString(5, genre);
                     pstmt->setInt(6, quantity_available1);
                     pstmt->execute();
-
+                    delete pstmt;
                     cout << "\nThe addition of the book was successful..!\n\n";
                     goto libraryDB;
-                case 8:
+                case 9:
                     //output all data (name etc)
                     //input name of book
                     //modify alt->input new, for quantity +/- int
                     //confirm
                     goto libraryDB; 
-                case 9:
+                case 10:
                     //output all data (name etc)
                     //input name of book
                     //delete
