@@ -22,7 +22,7 @@ using namespace std;
 //////////////Enter your DB data here////////////////////////////////////////////////////////////////////
 const string server = "tcp://127.0.0.1:3306";
 const string username = "root";
-const string password = "";
+const string password = "abc1221?!W";
 //////////////Main function Start////////////////////////////////////////////////////////////////////////
 
 void Message() {
@@ -46,21 +46,21 @@ int main() {
 //////////////Create tables, their columns, indexes, links, etc. for our libraryDB (if not existed)//////////////////////////////
         cout << "Creating libraryDB tables...\n\n";
         stmt = con->createStatement();
-        stmt->execute("CREATE TABLE IF NOT EXISTS library_adress (library_adress_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, adress VARCHAR(50) NOT NULL, zipcode VARCHAR(25) NOT NULL, city VARCHAR(35) NOT NULL, country VARCHAR(25) NOT NULL);");
+        stmt->execute("CREATE TABLE IF NOT EXISTS library_adress (library_adress_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, adress VARCHAR(50) NOT NULL, zipcode VARCHAR(25) NOT NULL, city VARCHAR(50) NOT NULL, country VARCHAR(50) NOT NULL);");
         stmt->execute("CREATE TABLE IF NOT EXISTS employee (employee_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(50) NOT NULL, position VARCHAR(50) NOT NULL, username VARCHAR(50) NOT NULL, password VARCHAR(64) NOT NULL);");        
-        stmt->execute("CREATE TABLE IF NOT EXISTS employee_adress (employee_adress_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, adress VARCHAR(50) NOT NULL, zipcode VARCHAR(25) NOT NULL, city VARCHAR(35) NOT NULL, country VARCHAR(25) NOT NULL);");  
+        stmt->execute("CREATE TABLE IF NOT EXISTS employee_adress (employee_adress_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, adress VARCHAR(50) NOT NULL, zipcode VARCHAR(25) NOT NULL, city VARCHAR(50) NOT NULL, country VARCHAR(50) NOT NULL);");  
         stmt->execute("CREATE TABLE IF NOT EXISTS customer (customer_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(50) NOT NULL, registration_date VARCHAR(50) NOT NULL, status_toomuch VARCHAR(25) DEFAULT 'No', status_toolong VARCHAR(25) DEFAULT 'No');");
         stmt->execute("CREATE TABLE IF NOT EXISTS customer_adress (customer_adress_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, adress VARCHAR(50) NOT NULL, zipcode VARCHAR(25) NOT NULL, city VARCHAR(35) NOT NULL, country VARCHAR(25) NOT NULL);");
-        stmt->execute("CREATE TABLE IF NOT EXISTS book (book_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, isbn VARCHAR(25) NOT NULL, title VARCHAR(50) NOT NULL, author VARCHAR(50) NOT NULL, publisher VARCHAR(25) NOT NULL, genre VARCHAR(25) NOT NULL, quantity_available INT(10) NOT NULL);");
-        stmt->execute("CREATE TABLE IF NOT EXISTS rental_status (rental_status_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, rent_customer_ID INT(10) NOT NULL, rent_book_ID INT(10) NOT NULL, rent_quantity INT(10) NOT NULL DEFAULT 0, rent_date VARCHAR(50), is_returned VARCHAR(25) DEFAULT 'No', return_quantity INT(10) DEFAULT 0, return_date VARCHAR(50), CONSTRAINT FOREIGN KEY (rent_book_ID) REFERENCES book (book_ID), CONSTRAINT FOREIGN KEY (rent_customer_ID) REFERENCES customer (customer_ID));");
+        stmt->execute("CREATE TABLE IF NOT EXISTS book (book_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, isbn VARCHAR(50) NOT NULL, title VARCHAR(50) NOT NULL, author VARCHAR(50) NOT NULL, publisher VARCHAR(50) NOT NULL, genre VARCHAR(50) NOT NULL, quantity_available INT(10) NOT NULL);");
+        stmt->execute("CREATE TABLE IF NOT EXISTS rental_status (rental_status_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, rent_customer_ID INT(10) NOT NULL, rent_book_ID INT(10) NOT NULL, rent_quantity INT(10) NOT NULL DEFAULT 0, rent_date VARCHAR(50), is_returned VARCHAR(25) DEFAULT 'No', return_quantity INT(10) DEFAULT 0, last_return_date VARCHAR(50), CONSTRAINT FOREIGN KEY (rent_book_ID) REFERENCES book (book_ID), CONSTRAINT FOREIGN KEY (rent_customer_ID) REFERENCES customer (customer_ID));");
         delete stmt;
 
         string optioncheck1, emname, emposition, emadress, emzip, emcity, emcountry, cuname, cuadress, 
-               cuzip, cucity, cucountry, username, username1, password,
+               cuzip, cucity, cucountry, username, username1, password, dbookid,
                password1, hashpw, hashpw1, isbn, title, author, publisher, genre, quantity_available, date,
                returnbookid, returnquantity, rentid, rentcustid, rentbookid, rentquantity;
 
-        int rentcustid1, rentbookid1, rentquantity1, returnbookid1, returnquantity1, rentid1;
+        int rentcustid1, rentbookid1, rentquantity1, returnbookid1, returnquantity1, rentid1, dbookid1;
         int count = 0, option1 = 0, quantity_available1 = 0;
 
     loop1:
@@ -176,7 +176,6 @@ int main() {
         cout << "7. Add Customer\n";
         cout << "8. Add Book\n";
         cout << "9. Modify Book\n";
-        cout << "10. Remove Book\n";
         cout << "0. Logout\n\n";
         cout << "Choose option: ";
         cin >> optioncheck1;
@@ -328,7 +327,7 @@ int main() {
                         goto libraryDB;
                     }         
                     date = date::format("%F %T", chrono::system_clock::now());
-                    pstmt = con->prepareStatement("UPDATE rental_status SET return_date = ?, is_returned = ?, return_quantity = return_quantity + ? WHERE rental_status_ID = ?");
+                    pstmt = con->prepareStatement("UPDATE rental_status SET last_return_date = ?, is_returned = ?, return_quantity = return_quantity + ? WHERE rental_status_ID = ?");
                     pstmt->setString(1, date);
                     if (count == 2) { 
                         pstmt->setString(2, "Not all");
@@ -451,17 +450,7 @@ int main() {
                     cout << "\nThe addition of the book was successful..!\n\n";
                     goto libraryDB;
                 case 9:
-                    //output all data (name etc)
-                    //input name of book
-                    //modify alt->input new, for quantity +/- int
-                    //confirm
-                    goto libraryDB; 
-                case 10:
-                    //output all data (name etc)
-                    //input name of book
-                    //delete
-                    //confirm
-                        goto loop1;
+                    goto libraryDB;
                 case 0:
                     goto loop1;
                 default:
