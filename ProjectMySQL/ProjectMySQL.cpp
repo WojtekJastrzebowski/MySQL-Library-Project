@@ -49,15 +49,18 @@ int main() {
         stmt->execute("CREATE TABLE IF NOT EXISTS library_adress (library_adress_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, adress VARCHAR(50) NOT NULL, zipcode VARCHAR(25) NOT NULL, city VARCHAR(35) NOT NULL, country VARCHAR(25) NOT NULL);");
         stmt->execute("CREATE TABLE IF NOT EXISTS employee (employee_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(50) NOT NULL, position VARCHAR(50) NOT NULL, username VARCHAR(50) NOT NULL, password VARCHAR(64) NOT NULL);");        
         stmt->execute("CREATE TABLE IF NOT EXISTS employee_adress (employee_adress_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, adress VARCHAR(50) NOT NULL, zipcode VARCHAR(25) NOT NULL, city VARCHAR(35) NOT NULL, country VARCHAR(25) NOT NULL);");  
-        stmt->execute("CREATE TABLE IF NOT EXISTS customer (customer_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(50) NOT NULL, registration_date VARCHAR(25) NOT NULL, status_toomuch VARCHAR(25), status_toolong VARCHAR(25));");
+        stmt->execute("CREATE TABLE IF NOT EXISTS customer (customer_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(50) NOT NULL, registration_date VARCHAR(50) NOT NULL, status_toomuch VARCHAR(25) DEFAULT 'No', status_toolong VARCHAR(25) DEFAULT 'No');");
         stmt->execute("CREATE TABLE IF NOT EXISTS customer_adress (customer_adress_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, adress VARCHAR(50) NOT NULL, zipcode VARCHAR(25) NOT NULL, city VARCHAR(35) NOT NULL, country VARCHAR(25) NOT NULL);");
-        stmt->execute("CREATE TABLE IF NOT EXISTS book (book_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, isbn VARCHAR(25) NOT NULL, title VARCHAR(50) NOT NULL, author VARCHAR(50) NOT NULL, publisher VARCHAR(25) NOT NULL, genre VARCHAR(25) NOT NULL, quantity_available INT(10) NOT NULL, status VARCHAR(25));");
-        stmt->execute("CREATE TABLE IF NOT EXISTS rental_status (rental_status_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, rent_customer_ID INT(10) NOT NULL, rent_book_ID INT(10) NOT NULL, rent_date DATE NOT NULL, CONSTRAINT FOREIGN KEY (rent_book_ID) REFERENCES book (book_ID), CONSTRAINT FOREIGN KEY (rent_customer_ID) REFERENCES customer (customer_ID));");
-        stmt->execute("CREATE TABLE IF NOT EXISTS return_status (return_status_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, return_customer_ID INT(10) NOT NULL, return_book_ID INT(10) NOT NULL, return_date DATE NOT NULL, CONSTRAINT FOREIGN KEY (return_book_ID) REFERENCES book (book_ID), CONSTRAINT FOREIGN KEY (return_customer_ID) REFERENCES rental_status (rent_customer_ID));");
+        stmt->execute("CREATE TABLE IF NOT EXISTS book (book_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, isbn VARCHAR(25) NOT NULL, title VARCHAR(50) NOT NULL, author VARCHAR(50) NOT NULL, publisher VARCHAR(25) NOT NULL, genre VARCHAR(25) NOT NULL, quantity_available INT(10) NOT NULL);");
+        stmt->execute("CREATE TABLE IF NOT EXISTS rental_status (rental_status_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, rent_customer_ID INT(10) NOT NULL, rent_book_ID INT(10) NOT NULL, rent_quantity INT(10) NOT NULL DEFAULT 0, rent_date VARCHAR(50), is_returned VARCHAR(25) DEFAULT 'No', return_quantity INT(10) DEFAULT 0, return_date VARCHAR(50), CONSTRAINT FOREIGN KEY (rent_book_ID) REFERENCES book (book_ID), CONSTRAINT FOREIGN KEY (rent_customer_ID) REFERENCES customer (customer_ID));");
         delete stmt;
 
-        string optioncheck1, emname, emposition, emadress, emzip, emcity, emcountry, cuname, cuadress, cuzip, cucity, cucountry, username, username1, password,
-               password1, hashpw, hashpw1, isbn, title, author, publisher, genre, quantity_available, date;
+        string optioncheck1, emname, emposition, emadress, emzip, emcity, emcountry, cuname, cuadress, 
+               cuzip, cucity, cucountry, username, username1, password,
+               password1, hashpw, hashpw1, isbn, title, author, publisher, genre, quantity_available, date,
+               returnbookid, returnquantity, rentid, rentcustid, rentbookid, rentquantity;
+
+        int rentcustid1, rentbookid1, rentquantity1, returnbookid1, returnquantity1, rentid1;
         int count = 0, option1 = 0, quantity_available1 = 0;
 
     loop1:
@@ -72,10 +75,11 @@ int main() {
             do {
                 switch (option1) {
                 case 1:
+                    cin.ignore();
                     cout << "Your username: ";
-                    cin >> username1;
+                    getline(cin, username1);
                     cout << "Your password: ";
-                    cin >> password1;
+                    getline(cin, password1);
                     hashpw1 = sha256(password1);
                         stmt = con->createStatement();
                         res = stmt->executeQuery("SELECT username, password FROM employee ORDER BY name ASC");
@@ -92,28 +96,29 @@ int main() {
                         delete stmt;
                     goto loop1;
                 case 2:
+                    cin.ignore();
                     cout << "Registration of a new employee\n\nName (required): ";
-                    cin >> emname;
+                    getline(cin, emname);
                     if (!IsFilled(emname)) {Message(); goto loop1; }
                     cout << "Your position (required): ";
-                    cin >> emposition;
+                    getline(cin, emposition);
                     if (!IsFilled(emposition)) {Message(); goto loop1; }
                     cout << "Adress (required): ";
-                    cin >> emadress;
+                    getline(cin, emadress);
                     if (!IsFilled(emadress)) {Message(); goto loop1; }
                     cout << "ZipCode (required): ";
-                    cin >> emzip;
+                    getline(cin, emzip);
                     if (!IsFilled(emzip)) {Message(); goto loop1; }
                     cout << "City (required): ";
-                    cin >> emcity;
+                    getline(cin, emcity);
                     if (!IsFilled(emcity)) {Message(); goto loop1; }
                     cout << "Country (required): ";
-                    cin >> emcountry;
+                    getline(cin, emcountry);
                     if (!IsFilled(emcountry)) {Message(); goto loop1; }
                     cout << "Choose your username (8-20)(required): ";
-                    cin >> username;
+                    getline(cin, username);
                     cout << "Choose your password (8-20)(required): ";
-                    cin >> password;
+                    getline(cin, password);
                     if(IsCorrect(username, password)){
                         stmt = con->createStatement();
                         res = stmt->executeQuery("SELECT username FROM employee ORDER BY name ASC");
@@ -181,14 +186,167 @@ int main() {
             do {
                 switch (option1) {
                 case 1:
-                    //add data
-                    //pstmt exec
-                    //done
+                    cout << "Registration of a new book rental: \n";
+                    cin.ignore();
+                    cout << "Book ID (required): ";
+                    getline(cin, rentbookid);
+                    if (!IsFilled(rentbookid)) { Message(); goto libraryDB; }
+                    if (IntCheck(rentbookid)) {
+                        rentbookid1 = stoi(rentbookid);
+                    }
+                    else {
+                        Message(); goto libraryDB;
+                    }
+                    cout << "Quantity (required): ";
+                    getline(cin, rentquantity);
+                    if (!IsFilled(rentquantity)) { Message(); goto libraryDB; }
+                    if (IntCheck(rentquantity)) {
+                        rentquantity1 = stoi(rentquantity);
+                    }
+                    else {
+                        Message(); goto libraryDB;
+                    }
+                    count == 1;
+                    stmt = con->createStatement();
+                    res = stmt->executeQuery("SELECT book_ID, quantity_available FROM book ORDER BY book_ID ASC");
+                    while (res->next() && count == 1) {
+                        int rentbookid1DB = res->getInt("book_ID");
+                        int rentquantity1DB = res->getInt("quantity_available");
+                        if (rentbookid1DB == rentbookid1) {
+                            count = 0;
+                            if (rentquantity1DB < rentquantity1) {
+                                cout << "\nOperation failed..!\nNot enough books..!\n\n";
+                                goto libraryDB;
+                            }
+                        }
+                    }
+                    delete stmt;
+                    delete res;
+                    if (count == 1) {
+                        cout << "\nOperation failed..!\nBook ID not in database..!\n\n";
+                        goto libraryDB;
+                    }       
+                    cout << "Customer ID (required): ";
+                    getline(cin, rentcustid);
+                    if (!IsFilled(rentcustid)) { Message(); goto libraryDB; }
+                    if (IntCheck(rentcustid)) {
+                        rentcustid1 = stoi(rentcustid);
+                    }
+                    else {
+                        Message(); goto libraryDB;
+                    }
+                    count = 1;
+                    stmt = con->createStatement();
+                    res = stmt->executeQuery("SELECT customer_ID FROM customer ORDER BY customer_ID ASC");
+                    while (res->next() && count == 1) {
+                        string rentcustidDB = res->getString("customer_ID");
+                        if (rentcustidDB == rentcustid) {
+                            count = 0;
+                            break;
+                        }
+                    }
+                    delete stmt;
+                    delete res;
+                    if (count == 1) {
+                        cout << "\nOperation failed..!\nCustomer ID not in database..!\n\n";
+                        goto libraryDB;
+                    }
+                    date = date::format("%F %T", chrono::system_clock::now());
+                    pstmt = con->prepareStatement("INSERT INTO rental_status(rent_customer_ID, rent_book_ID, rent_date, rent_quantity) VALUES(?,?,?,?)");
+                    pstmt->setInt(1, rentcustid1);
+                    pstmt->setInt(2, rentbookid1);
+                    pstmt->setString(3, date);
+                    pstmt->setInt(4, rentquantity1);
+                    pstmt->execute();
+                    delete pstmt;
+                    pstmt = con->prepareStatement("UPDATE book SET quantity_available = quantity_available - ? WHERE book_ID = ?");
+                    pstmt->setInt(1, rentquantity1);
+                    pstmt->setInt(2, rentbookid1);
+                    pstmt->execute();
+                    delete pstmt;
+                    cout << "\nBook rental registration successful..!\n\n";
                     goto libraryDB;
                 case 2:
-                    //add data
-                    //pstmt exec
-                    //done
+                    cout << "Registration of a new book return: \n";
+                    cin.ignore();
+                    cout << "Rent ID (required): ";
+                    getline(cin, rentid);
+                    if (!IsFilled(rentid)) { Message(); goto libraryDB; }
+                    if (IntCheck(rentid)) {
+                        rentid1 = stoi(rentid);
+                    }
+                    else {
+                        Message(); goto libraryDB;
+                    }
+                    cout << "Book ID (required): ";
+                    getline(cin, returnbookid);
+                    if (!IsFilled(returnbookid)) { Message(); goto libraryDB; }
+                    if (IntCheck(returnbookid)) {
+                        returnbookid1 = stoi(returnbookid);
+                    }
+                    else {
+                        Message(); goto libraryDB;
+                    }
+                    cout << "Quantity (required): ";
+                    getline(cin, returnquantity);
+                    if (!IsFilled(returnquantity)) { Message(); goto libraryDB; }
+                    if (IntCheck(returnquantity)) {
+                        returnquantity1 = stoi(returnquantity);
+                    }
+                    else {
+                        Message(); goto libraryDB;
+                    }
+                    count = 1;
+                    stmt = con->createStatement();
+                    res = stmt->executeQuery("SELECT rental_status_ID, rent_book_ID, rent_quantity, return_quantity FROM rental_status ORDER BY rental_status_ID ASC");
+                    while (res->next() && count == 1) {
+                        int rentid1DB = res->getInt("rental_status_ID");
+                        int returnquantity1DB = res->getInt("rent_quantity");
+                        int returnquantity2DB = res->getInt("return_quantity");
+                        int returnbookid1DB = res->getInt("rent_book_ID");
+                        if (rentid1DB == rentid1) {
+                            count = 0;
+                            if (returnbookid1DB != returnbookid1) {
+                                cout << "\nOperation failed..!\nBook ID not in database..!\n\n";
+                                goto libraryDB;
+                            }
+                            if (returnquantity1DB - returnquantity2DB > returnquantity1) {
+                                count = 2;
+                                break;
+                            }
+                            if (returnquantity1DB - returnquantity2DB < returnquantity1) {
+                                cout << "\nOperation failed..!\nThat's too many books..!\n\n";
+                                goto libraryDB;
+                            }
+                            break;
+                        }
+                    }
+                    delete stmt;
+                    delete res;
+                    if (count == 1) {
+                        cout << "\nOperation failed..!\nRent ID not in database..!\n\n";
+                        goto libraryDB;
+                    }         
+                    date = date::format("%F %T", chrono::system_clock::now());
+                    pstmt = con->prepareStatement("UPDATE rental_status SET return_date = ?, is_returned = ?, return_quantity = return_quantity + ? WHERE rental_status_ID = ?");
+                    pstmt->setString(1, date);
+                    if (count == 2) { 
+                        pstmt->setString(2, "Not all");
+                        cout << "\nOnly some of the books are returned..!\n";
+                    }
+                    else {
+                        pstmt->setString(2, "Yes");
+                    }
+                    pstmt->setInt(3, returnquantity1);
+                    pstmt->setInt(4, rentid1);
+                    pstmt->execute();
+                    delete pstmt;
+                    pstmt = con->prepareStatement("UPDATE book SET quantity_available = quantity_available + ? WHERE book_ID = ?");
+                    pstmt->setInt(1, returnquantity1);
+                    pstmt->setInt(2, returnbookid1);
+                    pstmt->execute();
+                    delete pstmt;
+                    cout << "\nBook return registration successful..!\n\n";
                     goto libraryDB;
                 case 3:
                     //1.list all data
@@ -224,7 +382,7 @@ int main() {
                     cout << "Country (required): ";
                     getline(cin, cucountry);
                     if (!IsFilled(cucountry)) { Message(); goto libraryDB; }
-                    date = date::format("%F %T", chrono::system_clock::now());
+                    date = date::format("%F %T", chrono::system_clock::now());     
                     pstmt = con->prepareStatement("INSERT INTO customer(name, registration_date) VALUES(?,?)");
                     pstmt->setString(1, cuname);
                     pstmt->setString(2, date);
@@ -239,7 +397,7 @@ int main() {
                     cout << "\nCustomer registration successful..!\n\n";
                     goto libraryDB;
                 case 8:              
-                    cout << "Add new book: \n";
+                    cout << "Registration of a new book: \n";
                     cin.ignore();
                     cout << "ISBN (required): ";
                     getline(cin, isbn);
@@ -266,7 +424,7 @@ int main() {
                         Message(); goto libraryDB;
                     }
                     stmt = con->createStatement();
-                    res = stmt->executeQuery("SELECT isbn, title FROM book ORDER BY name ASC");
+                    res = stmt->executeQuery("SELECT isbn, title FROM book ORDER BY isbn ASC");
                     while (res->next()) {
                         string isbnDB = res->getString("isbn");
                         string titleDB = res->getString("title");
