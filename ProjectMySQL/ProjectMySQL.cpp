@@ -61,7 +61,7 @@ int main() {
                returnbookid, returnquantity, rentid, rentcustid, rentbookid, rentquantity;
 
         int rentcustid1, rentbookid1, rentquantity1, returnbookid1, returnquantity1, rentid1, dbookid1;
-        int count = 0, option1 = 0, quantity_available1 = 0;
+        int count = 0, option1 = 0, quantity_available1 = 0, bookid3 = 0, custid3 = 0;
 
     loop1:
         cout << "Welcome to libraryDB. Please logIn or Register as employee:\n\n";
@@ -171,11 +171,10 @@ int main() {
         cout << "2. Add New Book Return\n";
         cout << "3. Check Book Availability\n";
         cout << "4. Check Customer Status\n";
-        cout << "5. Check Book Return\n";
-        cout << "6. Check Book Rentals\n";
-        cout << "7. Add Customer\n";
-        cout << "8. Add Book\n";
-        cout << "9. Modify Book\n";
+        cout << "5. Check Book Rentals\n";
+        cout << "6. Add Customer\n";
+        cout << "7. Add Book\n";
+        cout << "8. Modify Book\n";
         cout << "0. Logout\n\n";
         cout << "Choose option: ";
         cin >> optioncheck1;
@@ -348,22 +347,189 @@ int main() {
                     cout << "\nBook return registration successful..!\n\n";
                     goto libraryDB;
                 case 3:
-                    //1.list all data
-                    //2.choose book
-                    goto libraryDB;
+                    cout << "Choose Action:\n\n";
+                    cout << "1. List all the booksCheck exact book\n";
+                    cout << "2. Check exact book\n";
+                    cout << "3. Return\n";
+                    cin >> optioncheck1;
+                    if (IntCheck(optioncheck1)) {
+                        int option1 = stoi(optioncheck1);
+                        if (option1 == 1) {
+                            stmt = con->createStatement();
+                            res = stmt->executeQuery("SELECT book_ID, isbn, title, author, publisher, genre, quantity_available FROM book ORDER BY title ASC");
+                            while (res->next()) {
+                                int bookid2 = res->getInt("book_ID");
+                                string isbn2 = res->getString("isbn");
+                                string title2 = res->getString("title");
+                                string author2 = res->getString("author");
+                                string publisher2 = res->getString("publisher");
+                                string genre2 = res->getString("genre");
+                                int quantity2 = res->getInt("quantity_available");
+                                cout << "Title: " << title2;
+                                cout << " Author: " << author2;
+                                cout << " ID: " << bookid2;
+                                cout << " ISBN: " << isbn2;
+                                cout << " Publisher: " << publisher2;
+                                cout << " Genre: " << genre2;
+                                cout << " Available quantity: " << quantity2 << endl << endl;
+                            }
+                            delete stmt;
+                            delete res;
+                            system("pause");
+                        }
+                        if (option1 == 2) {
+                            string bookid3s;
+                            cout << "Enter book ID: ";
+                            cin >> bookid3s;
+                            if (IntCheck(bookid3s)) {
+                                bookid3 = stoi(bookid3s);
+                            }
+                            else {
+                                Message();
+                                goto libraryDB;
+                            }
+                            stmt = con->createStatement();
+                            res = stmt->executeQuery("SELECT book_ID, isbn, title, author, publisher, genre, quantity_available FROM book ORDER BY title ASC");
+                            while (res->next()) {
+                                int bookid2 = res->getInt("book_ID");
+                                if (bookid2 == bookid3) {
+                                    string isbn2 = res->getString("isbn");
+                                    string title2 = res->getString("title");
+                                    string author2 = res->getString("author");
+                                    string publisher2 = res->getString("publisher");
+                                    string genre2 = res->getString("genre");
+                                    int quantity2 = res->getInt("quantity_available");
+                                    cout << "Title: " << title2;
+                                    cout << " Author: " << author2;
+                                    cout << " ID: " << bookid2;
+                                    cout << " ISBN: " << isbn2;
+                                    cout << " Publisher: " << publisher2;
+                                    cout << " Genre: " << genre2;
+                                    cout << " Available quantity: " << quantity2 << endl << endl;
+                                    system("pause");
+                                    break;
+                                }
+                            }
+                            delete stmt;
+                            delete res;
+                        }
+                        if (option1 == 3) {
+                            goto libraryDB;
+                        }
+                    }
+                    else {
+                        Message();
+                        goto libraryDB;
+                    }
                 case 4:
-                    //1.list all data
-                    //2.search?
-                    goto libraryDB;
+                    cout << "Choose Action:\n\n";
+                    cout << "1. List all the customers\n";
+                    cout << "2. Check exact customer\n";
+                    cout << "3. Return\n";
+                    cin >> optioncheck1;
+                    if (IntCheck(optioncheck1)) {
+                        int option1 = stoi(optioncheck1);
+                        if (option1 == 1) {
+                            stmt = con->createStatement();
+                            res = stmt->executeQuery("SELECT customer_ID, name, registration_date, status_toomuch, status_toolong, adress, zipcode, city, country FROM customer, customer_adress ORDER BY name ASC");
+                            while (res->next()) {
+                                int customerid2 = res->getInt("customer_ID");
+                                string custname2 = res->getString("name");
+                                string registration_date2 = res->getString("registration_date");
+                                string status_toomuch2 = res->getString("status_toomuch");
+                                string status_toolong2 = res->getString("status_toolong"); 
+                                string custadress2 = res->getString("adress");
+                                string zipcode2 = res->getString("zipcode");
+                                string custcity2 = res->getString("city");
+                                string custcountry2 = res->getString("country");
+                                cout << "Name: " << custname2;
+                                cout << " ID: " << customerid2;
+                                cout << " Registration date: " << registration_date2;
+                                cout << " Has too much rentals?: " << status_toomuch2;
+                                cout << " Has rentals too long?: " << status_toolong2;
+                                cout << " Adress: " << custadress2;
+                                cout << " ZipCode: " << zipcode2;
+                                cout << " City: " << custcity2;
+                                cout << " Country: " << custcountry2;
+                            }
+                            delete stmt;
+                            delete res;
+                            system("pause");
+                        }
+
+                        if (option1 == 2) {
+                            string customerid2s;
+                            cout << "Enter customer ID: ";
+                            cin >> customerid2s;
+                            if (IntCheck(customerid2s)) {
+                                custid3 = stoi(customerid2s);
+                            }
+                            else {
+                                Message();
+                                goto libraryDB;
+                            }
+                            stmt = con->createStatement();
+                            res = stmt->executeQuery("SELECT customer_ID, name, registration_date, status_toomuch, status_toolong, adress, zipcode, city, country FROM customer, customer_adress ORDER BY name ASC");
+                            while (res->next()) {
+                                int customeriddb2 = res->getInt("customer_ID");
+                                if (custid3 == customeriddb2) {
+                                    string custname2 = res->getString("name");
+                                    string registration_date2 = res->getString("registration_date");
+                                    string status_toomuch2 = res->getString("status_toomuch");
+                                    string status_toolong2 = res->getString("status_toolong");
+                                    string custadress2 = res->getString("adress");
+                                    string zipcode2 = res->getString("zipcode");
+                                    string custcity2 = res->getString("city");
+                                    string custcountry2 = res->getString("country");
+                                    cout << "Name: " << custname2;
+                                    cout << " ID: " << custid3;
+                                    cout << " Registration date: " << registration_date2;
+                                    cout << " Has too much rentals?: " << status_toomuch2;
+                                    cout << " Has rentals too long?: " << status_toolong2;
+                                    cout << " Adress: " << custadress2;
+                                    cout << " ZipCode: " << zipcode2;
+                                    cout << " City: " << custcity2;
+                                    cout << " Country: " << custcountry2;
+                                    system("pause");
+                                    break;
+                                }
+                            }
+                            delete stmt;
+                            delete res;
+                        }
+                        if (option1 == 3) {
+                            goto libraryDB;
+                        }
+                    }
+                    else {
+                        Message();
+                        goto libraryDB;
+                    }
                 case 5:
-                    //1.list all data
-                    //2.search?
-                    goto libraryDB;
+                    cout << "All book rentals listed:\n\n";
+                    stmt = con->createStatement();
+                    res = stmt->executeQuery("SELECT rental_status_ID, rent_customer_ID, rent_book_ID, rent_quantity, rent_date, is_returned, return_quantity, last_return_date FROM rental_status ORDER BY rent_date ASC");
+                    while (res->next()) {
+                        int rentid3 = res->getInt("rental_status_ID");
+                        int rentcust3 = res->getInt("rent_customer_ID");
+                        int rentbook3 = res->getInt("rent_book_ID");
+                        int rentq3 = res->getInt("rent_quantity");
+                        string rentdate3 = res->getString("rent_date");
+                        string isreturned3 = res->getString("is_returned");
+                        int retquantity3 = res->getInt("return_quantity");
+                        string lastretdate3 = res->getString("last_return_date");
+
+                        cout << "Rent Date: " << rentdate3;
+                        cout << " Rental ID: " << rentid3;
+                        cout << " Book ID: " << rentbook3;
+                        cout << " Customer ID: " << rentcust3;
+                        cout << " Rent Quantity: " << rentq3;
+                        cout << " Is Returned?: " << isreturned3;
+                        cout << " Return Auantity: " << retquantity3;
+                        cout << " Last return date: " << lastretdate3;
+                    }  
+                    system("pause");
                 case 6:
-                    //1.list all data
-                    //2.search?
-                    goto libraryDB;
-                case 7:
                     cout << "Registration of a new customer: \n";
                     cin.ignore();
                     cout << "Name (required): ";
@@ -395,7 +561,7 @@ int main() {
                     delete pstmt;
                     cout << "\nCustomer registration successful..!\n\n";
                     goto libraryDB;
-                case 8:              
+                case 7:              
                     cout << "Registration of a new book: \n";
                     cin.ignore();
                     cout << "ISBN (required): ";
@@ -449,7 +615,7 @@ int main() {
                     delete pstmt;
                     cout << "\nThe addition of the book was successful..!\n\n";
                     goto libraryDB;
-                case 9:
+                case 8:
                     goto libraryDB;
                 case 0:
                     goto loop1;
