@@ -6,6 +6,7 @@
 */
 #include <stdlib.h>
 #include <iostream>
+#include <iomanip>
 //////////////MySQL header files/////////////////////////////////////////////////////////////////////////
 #include "mysql_connection.h"
 #include <cppconn/driver.h>
@@ -24,10 +25,6 @@ const string server = "tcp://127.0.0.1:3306";
 const string username = "root";
 const string password = "";
 //////////////Main function Start////////////////////////////////////////////////////////////////////////
-
-void Message() {
-    cout << "\nWrong parameters provided..!\nOperation has failed\n\n";
-}
 
 int main() {
 //////////////Attempt to connection with DB//////////////////////////////////////////////////////////////
@@ -65,20 +62,21 @@ int main() {
 
     loop1:
         cout << "Welcome to libraryDB. Please logIn or Register as employee:\n\n";
-        cout << "1. LogIn\n"; 
-        cout << "2. Register\n";
-        cout << "0. Exit\n\n";
-        cout << "Choose option: ";
+        cout << "*********** 1. LogIn\n"; 
+        cout << "*********** 2. Register\n";
+        cout << "*********** 0. Exit\n\n";
+        cout << "*********** Choose option: ";
         cin >> optioncheck1;
+        system("cls");
         if (IntCheck(optioncheck1)) {
             int option1 = stoi(optioncheck1);
             do {
                 switch (option1) {
                 case 1:
                     cin.ignore();
-                    cout << "Your username: ";
+                    cout << "*********** Your username: ";
                     getline(cin, username1);
-                    cout << "Your password: ";
+                    cout << "*********** Your password: ";
                     getline(cin, password1);
                     hashpw1 = sha256(password1);
                         stmt = con->createStatement();
@@ -87,37 +85,41 @@ int main() {
                             string usernameDB = res->getString("username");
                             string passwordDB = res->getString("password");
                             if (usernameDB == username1 && passwordDB == hashpw1) {
-                                cout << "\nLogin successful..!\n\n";
+                                cout << "\n*********** Login successful..!\n\n";
+                                system("pause");
+                                system("cls");
                                 goto libraryDB;
                             }                     
                         }
                         cout << "\nLogin failed..!\n\n";
                         delete res;
                         delete stmt;
+                        system("pause");
+                        system("cls");
                     goto loop1;
                 case 2:
                     cin.ignore();
-                    cout << "Registration of a new employee\n\nName (required): ";
+                    cout << "*********** Registration of a new employee\n\n*********** Name (required): ";
                     getline(cin, emname);
                     if (!IsFilled(emname)) {Message(); goto loop1; }
-                    cout << "Your position (required): ";
+                    cout << "*********** Your position (required): ";
                     getline(cin, emposition);
                     if (!IsFilled(emposition)) {Message(); goto loop1; }
-                    cout << "Adress (required): ";
+                    cout << "*********** Adress (required): ";
                     getline(cin, emadress);
                     if (!IsFilled(emadress)) {Message(); goto loop1; }
-                    cout << "ZipCode (required): ";
+                    cout << "*********** ZipCode (required): ";
                     getline(cin, emzip);
                     if (!IsFilled(emzip)) {Message(); goto loop1; }
-                    cout << "City (required): ";
+                    cout << "*********** City (required): ";
                     getline(cin, emcity);
                     if (!IsFilled(emcity)) {Message(); goto loop1; }
-                    cout << "Country (required): ";
+                    cout << "*********** Country (required): ";
                     getline(cin, emcountry);
                     if (!IsFilled(emcountry)) {Message(); goto loop1; }
-                    cout << "Choose your username (8-20)(required): ";
+                    cout << "*********** Choose your username (8-20)(required): ";
                     getline(cin, username);
-                    cout << "Choose your password (8-20)(required): ";
+                    cout << "*********** Choose your password (8-20)(required): ";
                     getline(cin, password);
                     if(IsCorrect(username, password)){
                         stmt = con->createStatement();
@@ -125,7 +127,9 @@ int main() {
                         while (res->next()) {
                             string usernameDB = res->getString("username"); 
                             if (usernameDB == username) {
-                                cout << "\nRegistration failed..!\nUsername already in database..!\n\n";
+                                cout << "\n*********** Registration failed..!\n*********** Username already in database..!\n\n";
+                                system("pause");
+                                system("cls");
                                 goto libraryDB;
                             }
                         }
@@ -145,7 +149,9 @@ int main() {
                         pstmt->setString(4, emcountry);
                         pstmt->execute();
                         delete pstmt;
-                        cout << "\nRegistration successful..!\n\n";
+                        cout << "\n*********** Registration successful..!\n\n";
+                        system("pause");
+                        system("cls");
                         goto loop1;
                     }
                     else {
@@ -166,27 +172,27 @@ int main() {
             goto loop1;
         }
     libraryDB:
-        cout << "LibraryDB. Please choose action:\n\n";
-        cout << "1. Add New Book Rental\n";
-        cout << "2. Add New Book Return\n";
-        cout << "3. Check Book Availability\n";
-        cout << "4. Check Customer Status\n";
-        cout << "5. Check Book Rentals\n";
-        cout << "6. Add Customer\n";
-        cout << "7. Add Book\n";
-        cout << "8. Modify Book\n";
-        cout << "0. Logout\n\n";
-        cout << "Choose option: ";
+        cout << "*********** LibraryDB \n\n";
+        cout << "*********** 1. Add New Book Rental\n";
+        cout << "*********** 2. Add New Book Return\n";
+        cout << "*********** 3. Check Book Availability\n";
+        cout << "*********** 4. Check Customer Status\n";
+        cout << "*********** 5. Check Book Rentals\n";
+        cout << "*********** 6. Add Customer\n";
+        cout << "*********** 7. Add Book\n";
+        cout << "*********** 8. Modify Book\n";
+        cout << "*********** 0. Logout\n\n";
+        cout << "*********** Choose option: ";
         cin >> optioncheck1;
-
+        system("cls");
         if (IntCheck(optioncheck1)) {
             int option1 = stoi(optioncheck1);
             do {
                 switch (option1) {
                 case 1:
-                    cout << "Registration of a new book rental: \n";
+                    cout << "*********** Registration of a new book rental: \n";
                     cin.ignore();
-                    cout << "Book ID (required): ";
+                    cout << "*********** Book ID (required): ";
                     getline(cin, rentbookid);
                     if (!IsFilled(rentbookid)) { Message(); goto libraryDB; }
                     if (IntCheck(rentbookid)) {
@@ -195,7 +201,7 @@ int main() {
                     else {
                         Message(); goto libraryDB;
                     }
-                    cout << "Quantity (required): ";
+                    cout << "*********** Quantity (required): ";
                     getline(cin, rentquantity);
                     if (!IsFilled(rentquantity)) { Message(); goto libraryDB; }
                     if (IntCheck(rentquantity)) {
@@ -213,7 +219,9 @@ int main() {
                         if (rentbookid1DB == rentbookid1) {
                             count = 0;
                             if (rentquantity1DB < rentquantity1) {
-                                cout << "\nOperation failed..!\nNot enough books..!\n\n";
+                                cout << "\n*********** Operation failed..!\n*********** Not enough books..!\n\n";
+                                system("pause");
+                                system("cls");
                                 goto libraryDB;
                             }
                         }
@@ -221,10 +229,12 @@ int main() {
                     delete stmt;
                     delete res;
                     if (count == 1) {
-                        cout << "\nOperation failed..!\nBook ID not in database..!\n\n";
+                        cout << "\n*********** Operation failed..!\n*********** Book ID not in database..!\n\n";
+                        system("pause");
+                        system("cls");
                         goto libraryDB;
                     }       
-                    cout << "Customer ID (required): ";
+                    cout << "*********** Customer ID (required): ";
                     getline(cin, rentcustid);
                     if (!IsFilled(rentcustid)) { Message(); goto libraryDB; }
                     if (IntCheck(rentcustid)) {
@@ -246,10 +256,12 @@ int main() {
                     delete stmt;
                     delete res;
                     if (count == 1) {
-                        cout << "\nOperation failed..!\nCustomer ID not in database..!\n\n";
+                        cout << "\n*********** Operation failed..!\n*********** Customer ID not in database..!\n\n";
+                        system("pause");
+                        system("cls");
                         goto libraryDB;
                     }
-                    date = date::format("%F %T", chrono::system_clock::now());
+                    date = date::format("%F", chrono::system_clock::now());
                     pstmt = con->prepareStatement("INSERT INTO rental_status(rent_customer_ID, rent_book_ID, rent_date, rent_quantity) VALUES(?,?,?,?)");
                     pstmt->setInt(1, rentcustid1);
                     pstmt->setInt(2, rentbookid1);
@@ -262,12 +274,14 @@ int main() {
                     pstmt->setInt(2, rentbookid1);
                     pstmt->execute();
                     delete pstmt;
-                    cout << "\nBook rental registration successful..!\n\n";
+                    cout << "\n*********** Book rental registration successful..!\n\n";
+                    system("pause");
+                    system("cls");
                     goto libraryDB;
                 case 2:
-                    cout << "Registration of a new book return: \n";
+                    cout << "*********** Registration of a new book return: \n";
                     cin.ignore();
-                    cout << "Rent ID (required): ";
+                    cout << "*********** Rent ID (required): ";
                     getline(cin, rentid);
                     if (!IsFilled(rentid)) { Message(); goto libraryDB; }
                     if (IntCheck(rentid)) {
@@ -276,7 +290,7 @@ int main() {
                     else {
                         Message(); goto libraryDB;
                     }
-                    cout << "Book ID (required): ";
+                    cout << "*********** Book ID (required): ";
                     getline(cin, returnbookid);
                     if (!IsFilled(returnbookid)) { Message(); goto libraryDB; }
                     if (IntCheck(returnbookid)) {
@@ -285,7 +299,7 @@ int main() {
                     else {
                         Message(); goto libraryDB;
                     }
-                    cout << "Quantity (required): ";
+                    cout << "*********** Quantity (required): ";
                     getline(cin, returnquantity);
                     if (!IsFilled(returnquantity)) { Message(); goto libraryDB; }
                     if (IntCheck(returnquantity)) {
@@ -305,7 +319,9 @@ int main() {
                         if (rentid1DB == rentid1) {
                             count = 0;
                             if (returnbookid1DB != returnbookid1) {
-                                cout << "\nOperation failed..!\nBook ID not in database..!\n\n";
+                                cout << "\n*********** Operation failed..!\n*********** Book ID not in database..!\n\n";
+                                system("pause");
+                                system("cls");
                                 goto libraryDB;
                             }
                             if (returnquantity1DB - returnquantity2DB > returnquantity1) {
@@ -313,7 +329,9 @@ int main() {
                                 break;
                             }
                             if (returnquantity1DB - returnquantity2DB < returnquantity1) {
-                                cout << "\nOperation failed..!\nThat's too many books..!\n\n";
+                                cout << "\n*********** Operation failed..!\n*********** That's too many books..!\n\n";
+                                system("pause");
+                                system("cls");
                                 goto libraryDB;
                             }
                             break;
@@ -322,15 +340,17 @@ int main() {
                     delete stmt;
                     delete res;
                     if (count == 1) {
-                        cout << "\nOperation failed..!\nRent ID not in database..!\n\n";
+                        cout << "\n*********** Operation failed..!\n*********** Rent ID not in database..!\n\n";
+                        system("pause");
+                        system("cls");
                         goto libraryDB;
                     }         
-                    date = date::format("%F %T", chrono::system_clock::now());
+                    date = date::format("%F", chrono::system_clock::now());
                     pstmt = con->prepareStatement("UPDATE rental_status SET last_return_date = ?, is_returned = ?, return_quantity = return_quantity + ? WHERE rental_status_ID = ?");
                     pstmt->setString(1, date);
                     if (count == 2) { 
                         pstmt->setString(2, "Not all");
-                        cout << "\nOnly some of the books are returned..!\n";
+                        cout << "\n*********** Only some of the books are returned..!\n\n";
                     }
                     else {
                         pstmt->setString(2, "Yes");
@@ -344,14 +364,17 @@ int main() {
                     pstmt->setInt(2, returnbookid1);
                     pstmt->execute();
                     delete pstmt;
-                    cout << "\nBook return registration successful..!\n\n";
+                    cout << "\n*********** Book return registration successful..!\n\n";
+                    system("pause");
+                    system("cls");
                     goto libraryDB;
                 case 3:
-                    cout << "1. List all the books\n";
-                    cout << "2. Check exact book\n";
-                    cout << "3. Return\n";
-                    cout << "Choose Action: ";
+                    cout << "*********** 1. List all the books\n";
+                    cout << "*********** 2. Check exact book\n";
+                    cout << "*********** 3. Return\n";
+                    cout << "*********** Choose Action: ";
                     cin >> optioncheck1;
+                    system("cls");
                     if (IntCheck(optioncheck1)) {
                         int option1 = stoi(optioncheck1);
                         if (option1 == 1) {
@@ -365,21 +388,22 @@ int main() {
                                 string publisher2 = res->getString("publisher");
                                 string genre2 = res->getString("genre");
                                 int quantity2 = res->getInt("quantity_available");
-                                cout << endl << "Title: " << title2;
-                                cout << " Author: " << author2;
-                                cout << " ID: " << bookid2;
-                                cout << " ISBN: " << isbn2;
-                                cout << " Publisher: " << publisher2;
-                                cout << " Genre: " << genre2;
-                                cout << " Available quantity: " << quantity2 << endl << endl;
+                                cout << endl << "*********** Title: " << title2;
+                                cout << "*********** Author: " << author2;
+                                cout << "*********** ID: " << bookid2;
+                                cout << "*********** ISBN: " << isbn2;
+                                cout << "*********** Publisher: " << publisher2;
+                                cout << "*********** Genre: " << genre2;
+                                cout << "*********** Available quantity: " << quantity2 << endl << endl;
                             }
                             delete stmt;
                             delete res;
                             system("pause");
+                            system("cls");
                         }
                         if (option1 == 2) {
                             string bookid3s;
-                            cout << "Enter book ID: ";
+                            cout << "*********** Enter book ID: ";
                             cin >> bookid3s;
                             if (IntCheck(bookid3s)) {
                                 bookid3 = stoi(bookid3s);
@@ -399,14 +423,15 @@ int main() {
                                     string publisher2 = res->getString("publisher");
                                     string genre2 = res->getString("genre");
                                     int quantity2 = res->getInt("quantity_available");
-                                    cout << endl << "Title: " << title2;
-                                    cout << " Author: " << author2;
-                                    cout << " ID: " << bookid2;
-                                    cout << " ISBN: " << isbn2;
-                                    cout << " Publisher: " << publisher2;
-                                    cout << " Genre: " << genre2;
-                                    cout << " Available quantity: " << quantity2 << endl << endl;
+                                    cout << endl << "*********** Title: " << title2;
+                                    cout << "*********** Author: " << author2;
+                                    cout << "*********** ID: " << bookid2;
+                                    cout << "*********** ISBN: " << isbn2;
+                                    cout << "*********** Publisher: " << publisher2;
+                                    cout << "*********** Genre: " << genre2;
+                                    cout << "*********** Available quantity: " << quantity2 << endl << endl;
                                     system("pause");
+                                    system("cls");
                                     break;
                                 }
                             }
@@ -423,11 +448,13 @@ int main() {
                     }
                     goto libraryDB;
                 case 4:
-                    cout << "1. List all the customers\n";
-                    cout << "2. Check exact customer\n";
-                    cout << "3. Return\n";
-                    cout << "Choose Action: ";
+                    cout << "*********** 1. List all the customers\n";
+                    cout << "*********** 2. Check exact customer\n";
+                    cout << "*********** 3. Return\n";
+                    cout << "*********** Choose Action: ";
                     cin >> optioncheck1;
+                    system("pause");
+                    system("cls");
                     if (IntCheck(optioncheck1)) {
                         int option1 = stoi(optioncheck1);
                         if (option1 == 1) {
@@ -443,24 +470,26 @@ int main() {
                                 string zipcode2 = res->getString("zipcode");
                                 string custcity2 = res->getString("city");
                                 string custcountry2 = res->getString("country");
-                                cout << endl << "Name: " << custname2;
-                                cout << " ID: " << customerid2;
-                                cout << " Registration date: " << registration_date2;
-                                cout << " Has too much rentals?: " << status_toomuch2;
-                                cout << " Has rentals too long?: " << status_toolong2;
-                                cout << " Adress: " << custadress2;
-                                cout << " ZipCode: " << zipcode2;
-                                cout << " City: " << custcity2;
-                                cout << " Country: " << custcountry2;
+                                cout << endl << "*********** Name: " << custname2;
+                                cout << "*********** ID: " << customerid2;
+                                cout << "*********** Registration date: " << registration_date2;
+                                cout << "*********** Has too much rentals?: " << status_toomuch2;
+                                cout << "*********** Has rentals too long?: " << status_toolong2;
+                                cout << "*********** Adress: " << custadress2;
+                                cout << "*********** ZipCode: " << zipcode2;
+                                cout << "*********** City: " << custcity2;
+                                cout << "*********** Country: " << custcountry2;
                             }
                             delete stmt;
                             delete res;
                             system("pause");
+                            system("cls");
                         }
                         if (option1 == 2) {
                             string customerid2s;
-                            cout << "Enter customer ID: ";
+                            cout << "*********** Enter customer ID: ";
                             cin >> customerid2s;
+                            system("cls");
                             if (IntCheck(customerid2s)) {
                                 custid3 = stoi(customerid2s);
                             }
@@ -481,16 +510,17 @@ int main() {
                                     string zipcode2 = res->getString("zipcode");
                                     string custcity2 = res->getString("city");
                                     string custcountry2 = res->getString("country");
-                                    cout << endl << "Name: " << custname2;
-                                    cout << " ID: " << custid3;
-                                    cout << " Registration date: " << registration_date2;
-                                    cout << " Has too much rentals?: " << status_toomuch2;
-                                    cout << " Has rentals too long?: " << status_toolong2;
-                                    cout << " Adress: " << custadress2;
-                                    cout << " ZipCode: " << zipcode2;
-                                    cout << " City: " << custcity2;
-                                    cout << " Country: " << custcountry2;
+                                    cout << endl << "*********** Name: " << custname2;
+                                    cout << "*********** ID: " << custid3;
+                                    cout << "*********** Registration date: " << registration_date2;
+                                    cout << "*********** Has too much rentals?: " << status_toomuch2;
+                                    cout << "*********** Has rentals too long?: " << status_toolong2;
+                                    cout << "*********** Adress: " << custadress2;
+                                    cout << "*********** ZipCode: " << zipcode2;
+                                    cout << "*********** City: " << custcity2;
+                                    cout << "*********** Country: " << custcountry2;
                                     system("pause");
+                                    system("cls");
                                     break;
                                 }
                             }
@@ -507,9 +537,12 @@ int main() {
                     }
                     goto libraryDB;
                 case 5:
-                    cout << "All book rentals listed:\n\n";
+                    cout << "*********** All book rentals listed:\n\n";
                     stmt = con->createStatement();
                     res = stmt->executeQuery("SELECT * FROM rental_status ORDER BY rent_date ASC");
+                    cout << endl << "|Rent  Date|" << "|Rental ID|" << "|Book ID|" << "|Customer ID|"
+                        << "|Rent Quantity|" << "|Is Returned?|" << "|Return Quantity|" << "|Last return date|" 
+                        << endl << "-------------------------------------------------------------------------------------------------------------";
                     while (res->next()) {
                         int rentid3 = res->getInt("rental_status_ID");
                         int rentcust3 = res->getInt("rent_customer_ID");
@@ -519,39 +552,34 @@ int main() {
                         string isreturned3 = res->getString("is_returned");
                         int retquantity3 = res->getInt("return_quantity");
                         string lastretdate3 = res->getString("last_return_date");
-
-                        cout << endl << "Rent Date: " << rentdate3;
-                        cout << " Rental ID: " << rentid3;
-                        cout << " Book ID: " << rentbook3;
-                        cout << " Customer ID: " << rentcust3;
-                        cout << " Rent Quantity: " << rentq3;
-                        cout << " Is Returned?: " << isreturned3;
-                        cout << " Return Auantity: " << retquantity3;
-                        cout << " Last return date: " << lastretdate3;
+                        cout << endl << "|" << setw(10) << rentdate3 << "||" << setw(9) << rentid3 << "||" << setw(7) << rentbook3 << "||" << setw(11) << rentcust3
+                            << "||" << setw(13) << rentq3 << "||" << setw(12) << isreturned3 << "||" << setw(15) << retquantity3 << "||" << setw(16) << lastretdate3 << "|";
                     }  
                     delete res;
                     delete stmt;
+                    cout << endl << endl;
                     system("pause");
+                    system("cls");
                     goto libraryDB;
                 case 6:
-                    cout << "Registration of a new customer: \n";
+                    cout << "*********** Registration of a new customer: \n";
                     cin.ignore();
-                    cout << "Name (required): ";
+                    cout << "*********** Name (required): ";
                     getline(cin, cuname);
                     if (!IsFilled(cuname)) { Message(); goto libraryDB; }
-                    cout << "Adress (required): ";
+                    cout << "*********** Adress (required): ";
                     getline(cin, cuadress);
                     if (!IsFilled(cuadress)) { Message(); goto libraryDB; }
-                    cout << "ZipCode (required): ";
+                    cout << "*********** ZipCode (required): ";
                     getline(cin, cuzip);
                     if (!IsFilled(cuzip)) { Message(); goto libraryDB; }
-                    cout << "City (required): ";
+                    cout << "*********** City (required): ";
                     getline(cin, cucity);
                     if (!IsFilled(cucity)) { Message(); goto libraryDB; }
-                    cout << "Country (required): ";
+                    cout << "*********** Country (required): ";
                     getline(cin, cucountry);
                     if (!IsFilled(cucountry)) { Message(); goto libraryDB; }
-                    date = date::format("%F %T", chrono::system_clock::now());     
+                    date = date::format("%F", chrono::system_clock::now());     
                     pstmt = con->prepareStatement("INSERT INTO customer(name, registration_date) VALUES(?,?)");
                     pstmt->setString(1, cuname);
                     pstmt->setString(2, date);
@@ -564,27 +592,29 @@ int main() {
                     pstmt->setString(4, cucountry);
                     pstmt->execute();
                     delete pstmt;
-                    cout << "\nCustomer registration successful..!\n\n";
+                    cout << "\n*********** Customer registration successful..!\n\n";
+                    system("pause");
+                    system("cls");
                     goto libraryDB;
                 case 7:              
-                    cout << "Registration of a new book: \n";
+                    cout << "*********** Registration of a new book: \n";
                     cin.ignore();
-                    cout << "ISBN (required): ";
+                    cout << "*********** ISBN (required): ";
                     getline(cin, isbn);
                     if (!IsFilled(isbn)) {Message(); goto libraryDB; }
-                    cout << "Title (required): ";
+                    cout << "*********** Title (required): ";
                     getline(cin, title);
                     if (!IsFilled(title)) {Message(); goto libraryDB; }
-                    cout << "Author (required): ";
+                    cout << "*********** Author (required): ";
                     getline(cin, author);
                     if (!IsFilled(author)) {Message(); goto libraryDB; }
-                    cout << "Publisher (required): ";
+                    cout << "*********** Publisher (required): ";
                     getline(cin, publisher);
                     if (!IsFilled(publisher)) {Message(); goto libraryDB; }
-                    cout << "Genre (required): ";
+                    cout << "*********** Genre (required): ";
                     getline(cin, genre);
                     if (!IsFilled(genre)) {Message(); goto libraryDB; }
-                    cout << "Quantity (required): ";
+                    cout << "*********** Quantity (required): ";
                     getline(cin, quantity_available);
                     if (!IsFilled(quantity_available)) { Message(); goto libraryDB; }
                     if (IntCheck(quantity_available)) {
@@ -599,11 +629,15 @@ int main() {
                         string isbnDB = res->getString("isbn");
                         string titleDB = res->getString("title");
                         if (isbnDB == isbn) {
-                            cout << "\nOperation failed..!\nISBN already in database..!\n\n";
+                            cout << "\n*********** Operation failed..!\n*********** ISBN already in database..!\n\n";
+                            system("pause");
+                            system("cls");
                             goto libraryDB;
                         }
                         if (titleDB == title) {
-                            cout << "\nOperation failed..!\nTitle already in database..!\n\n";
+                            cout << "\n*********** Operation failed..!\n*********** Title already in database..!\n\n";
+                            system("pause");
+                            system("cls");
                             goto libraryDB;
                         }
                     }
@@ -618,10 +652,12 @@ int main() {
                     pstmt->setInt(6, quantity_available1);
                     pstmt->execute();
                     delete pstmt;
-                    cout << "\nThe addition of the book was successful..!\n\n";
+                    cout << "\n*********** The addition of the book was successful..!\n\n";
+                    system("pause");
+                    system("cls");
                     goto libraryDB;
                 case 8:
-                    cout << "Enter book ID: ";
+                    cout << "*********** Enter book ID: ";
                     cin >> bookid4s;
                     if (IntCheck(bookid4s)) {
                         bookid4 = stoi(bookid4s);
@@ -641,15 +677,14 @@ int main() {
                             string publisher2 = res->getString("publisher");
                             string genre2 = res->getString("genre");
                             int quantity2 = res->getInt("quantity_available");
-                            cout << endl << "Your book: " << endl << endl;
-                            cout << "Title: " << title2 << endl;
-                            cout << "Author: " << author2 << endl;
-                            cout << "ID: " << bookid4 << endl;
-                            cout << "ISBN: " << isbn2 << endl;
-                            cout << "Publisher: " << publisher2 << endl;
-                            cout << "Genre: " << genre2 << endl;
-                            cout << "Available quantity: " << quantity2 << endl << endl;
-                            system("pause");
+                            cout << endl << "*********** Your book: " << endl << endl;
+                            cout << "*********** Title: " << title2 << endl;
+                            cout << "*********** Author: " << author2 << endl;
+                            cout << "*********** ID: " << bookid4 << endl;
+                            cout << "*********** ISBN: " << isbn2 << endl;
+                            cout << "*********** Publisher: " << publisher2 << endl;
+                            cout << "*********** Genre: " << genre2 << endl;
+                            cout << "*********** Available quantity: " << quantity2 << endl << endl;
                             break;
                         }
                         else {
@@ -658,20 +693,21 @@ int main() {
                     }
                     delete res;
                     delete stmt;
-                    cout << "1. Change Title\n";
-                    cout << "2. Change Author\n";
-                    cout << "3. Change Publisher\n";
-                    cout << "4. Change Genre\n";
-                    cout << "5. Change Quantity\n";
-                    cout << "6. Return\n";
-                    cout << "Choose Action: ";
+                    cout << "*********** 1. Change Title\n";
+                    cout << "*********** 2. Change Author\n";
+                    cout << "*********** 3. Change Publisher\n";
+                    cout << "*********** 4. Change Genre\n";
+                    cout << "*********** 5. Change Quantity\n";
+                    cout << "*********** 6. Return\n";
+                    cout << "*********** Choose Action: ";
                     cin >> optioncheck1;
+                    system("cls");
                     if (IntCheck(optioncheck1)) {
                         int option1 = stoi(optioncheck1);   
                         if (option1 == 1) {
                             string change1;
                             cin.ignore();
-                            cout << endl << "New Title: ";
+                            cout << endl << "*********** New Title: ";
                             getline(cin, change1);
                             if (!IsFilled(change1)) { Message(); goto libraryDB; }
                             pstmt = con->prepareStatement("UPDATE book SET title = ? WHERE book_ID = ?");
@@ -679,12 +715,12 @@ int main() {
                             pstmt->setInt(2, bookid4);
                             pstmt->execute();
                             delete pstmt;
-                            cout << "\nOperation successful..!\n\n";
+                            cout << "\n*********** Operation successful..!\n\n";
                         }
                         if (option1 == 2) {
                             string change1;
                             cin.ignore();
-                            cout << endl << "New Author: ";
+                            cout << endl << "*********** New Author: ";
                             getline(cin, change1);
                             if (!IsFilled(change1)) { Message(); goto libraryDB; }
                             pstmt = con->prepareStatement("UPDATE book SET author = ? WHERE book_ID = ?");
@@ -692,12 +728,12 @@ int main() {
                             pstmt->setInt(2, bookid4);
                             pstmt->execute();
                             delete pstmt;
-                            cout << "\nOperation successful..!\n\n";
+                            cout << "\n*********** Operation successful..!\n\n";
                         }
                         if (option1 == 3) {
                             string change1;
                             cin.ignore();
-                            cout << endl << "New Publisher: ";
+                            cout << endl << "*********** New Publisher: ";
                             getline(cin, change1);
                             if (!IsFilled(change1)) { Message(); goto libraryDB; }
                             pstmt = con->prepareStatement("UPDATE book SET publisher = ? WHERE book_ID = ?");
@@ -705,12 +741,12 @@ int main() {
                             pstmt->setInt(2, bookid4);
                             pstmt->execute();
                             delete pstmt;
-                            cout << "\nOperation successful..!\n\n";
+                            cout << "\n*********** Operation successful..!\n\n";
                         }
                         if (option1 == 4) {
                             string change1;
                             cin.ignore();
-                            cout << endl << "New Genre: ";
+                            cout << endl << "*********** New Genre: ";
                             getline(cin, change1);
                             if (!IsFilled(change1)) { Message(); goto libraryDB; }
                             pstmt = con->prepareStatement("UPDATE book SET genre = ? WHERE book_ID = ?");
@@ -718,12 +754,12 @@ int main() {
                             pstmt->setInt(2, bookid4);
                             pstmt->execute();
                             delete pstmt;
-                            cout << "\nOperation successful..!\n\n";
+                            cout << "\n*********** Operation successful..!\n\n";
                         }
                         if (option1 == 5) {
                             string change1;
                             cin.ignore();
-                            cout << endl << "New Quantity: ";
+                            cout << endl << "*********** New Quantity: ";
                             cin >> change1;
                             if (IntCheck(change1)) {
                                 change2 = stoi(change1);
@@ -737,8 +773,10 @@ int main() {
                             pstmt->setInt(2, bookid4);
                             pstmt->execute();
                             delete pstmt;
-                            cout << "\nOperation successful..!\n\n";
+                            cout << "\n*********** Operation successful..!\n\n";
                         }
+                        system("pause");
+                        system("cls");
                     }
                     else {
                         goto libraryDB;
@@ -759,9 +797,9 @@ int main() {
         delete con;
     }
     catch (sql::SQLException& e){
-        cout << "# ERR: SQLException in " << __FILE__;
+        cout << "*********** # ERR: SQLException in " << __FILE__;
         cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << endl;
-        cout << "# ERR: " << e.what();
+        cout << "*********** # ERR: " << e.what();
         cout << " (MySQL error code: " << e.getErrorCode();
         cout << ", SQLState: " << e.getSQLState() << " )" << endl;
     }

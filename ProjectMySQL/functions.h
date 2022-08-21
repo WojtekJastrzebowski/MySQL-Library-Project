@@ -10,5 +10,6 @@ using namespace std;
 bool IntCheck(string option);
 bool IsCorrect(string username, string password);
 bool IsFilled(string string);
+void Message();
 
 #endif // MY_FUNCTION_H

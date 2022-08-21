@@ -32,3 +32,8 @@ bool IsFilled(string string) {
 	}
 	else return false;
 }
+void Message() {
+	cout << "\n*********** Wrong parameters provided..!\n*********** Operation has failed\n\n";
+	system("pause");
+	system("cls");
+}
