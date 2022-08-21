@@ -380,6 +380,8 @@ int main() {
                         if (option1 == 1) {
                             stmt = con->createStatement();
                             res = stmt->executeQuery("SELECT book_ID, isbn, title, author, publisher, genre, quantity_available FROM book ORDER BY title ASC");
+                            cout << endl << "|        Title        |" << "|        Author        |" << "|   ID   |" << "|   ISBN   |" << "|      Publisher      |"
+                                << "|     Genre     |" << "|Quantity|" << endl << "-----------------------------------------------------------------------------------------------------------------------";
                             while (res->next()) {
                                 int bookid2 = res->getInt("book_ID");
                                 string isbn2 = res->getString("isbn");
@@ -388,13 +390,8 @@ int main() {
                                 string publisher2 = res->getString("publisher");
                                 string genre2 = res->getString("genre");
                                 int quantity2 = res->getInt("quantity_available");
-                                cout << endl << "*********** Title: " << title2;
-                                cout << "*********** Author: " << author2;
-                                cout << "*********** ID: " << bookid2;
-                                cout << "*********** ISBN: " << isbn2;
-                                cout << "*********** Publisher: " << publisher2;
-                                cout << "*********** Genre: " << genre2;
-                                cout << "*********** Available quantity: " << quantity2 << endl << endl;
+                                cout << endl << "|" << setw(21) << title2 << "||" << setw(22) << author2 << "||" << setw(8) << bookid2 << "||" << setw(10) << isbn2
+                                    << "||" << setw(21) << publisher2 << "||" << setw(15) << genre2 << "||" << setw(8) << quantity2 << "|" << endl;
                             }
                             delete stmt;
                             delete res;
@@ -423,13 +420,10 @@ int main() {
                                     string publisher2 = res->getString("publisher");
                                     string genre2 = res->getString("genre");
                                     int quantity2 = res->getInt("quantity_available");
-                                    cout << endl << "*********** Title: " << title2;
-                                    cout << "*********** Author: " << author2;
-                                    cout << "*********** ID: " << bookid2;
-                                    cout << "*********** ISBN: " << isbn2;
-                                    cout << "*********** Publisher: " << publisher2;
-                                    cout << "*********** Genre: " << genre2;
-                                    cout << "*********** Available quantity: " << quantity2 << endl << endl;
+                                    cout << endl << "|        Title        |" << "|        Author        |" << "|   ID   |" << "|   ISBN   |" << "|      Publisher      |"
+                                        << "|     Genre     |" << "|Quantity|" << endl << "-----------------------------------------------------------------------------------------------------------------------";
+                                    cout << endl << "|" << setw(21) << title2 << "||" << setw(22) << author2 << "||" << setw(8) << bookid2 << "||" << setw(10) << isbn2
+                                        << "||" << setw(21) << publisher2 << "||" << setw(15) << genre2 << "||" << setw(8) << quantity2 << "|" << endl;
                                     system("pause");
                                     system("cls");
                                     break;
@@ -453,13 +447,15 @@ int main() {
                     cout << "*********** 3. Return\n";
                     cout << "*********** Choose Action: ";
                     cin >> optioncheck1;
-                    system("pause");
                     system("cls");
                     if (IntCheck(optioncheck1)) {
                         int option1 = stoi(optioncheck1);
                         if (option1 == 1) {
                             stmt = con->createStatement();
                             res = stmt->executeQuery("SELECT customer_ID, name, registration_date, status_toomuch, status_toolong, adress, zipcode, city, country FROM customer, customer_adress ORDER BY name ASC");
+                            cout << endl << "|        Name        |" << "|  ID  |" << "|Registration date|" << "|too_much?|" << "|too_long?|"
+                                << "|        Adress        |" << "|ZipCode|" << "|     City     |" << "|     Country     |"
+                                << endl << "-------------------------------------------------------------------------------------------------------------------------------------------";
                             while (res->next()) {
                                 int customerid2 = res->getInt("customer_ID");
                                 string custname2 = res->getString("name");
@@ -470,15 +466,9 @@ int main() {
                                 string zipcode2 = res->getString("zipcode");
                                 string custcity2 = res->getString("city");
                                 string custcountry2 = res->getString("country");
-                                cout << endl << "*********** Name: " << custname2;
-                                cout << "*********** ID: " << customerid2;
-                                cout << "*********** Registration date: " << registration_date2;
-                                cout << "*********** Has too much rentals?: " << status_toomuch2;
-                                cout << "*********** Has rentals too long?: " << status_toolong2;
-                                cout << "*********** Adress: " << custadress2;
-                                cout << "*********** ZipCode: " << zipcode2;
-                                cout << "*********** City: " << custcity2;
-                                cout << "*********** Country: " << custcountry2;
+                                cout << endl << "|" << setw(20) << custname2 << "||" << setw(6) << customerid2 << "||" << setw(17) << registration_date2 << "||" << setw(9) << status_toomuch2
+                                    << "||" << setw(9) << status_toolong2 << "||" << setw(22) << custadress2 << "||" << setw(7) << zipcode2 << "||" << setw(14) << custcity2
+                                    << "||" << setw(17) << custcountry2 << "|" << endl;
                             }
                             delete stmt;
                             delete res;
@@ -510,15 +500,12 @@ int main() {
                                     string zipcode2 = res->getString("zipcode");
                                     string custcity2 = res->getString("city");
                                     string custcountry2 = res->getString("country");
-                                    cout << endl << "*********** Name: " << custname2;
-                                    cout << "*********** ID: " << custid3;
-                                    cout << "*********** Registration date: " << registration_date2;
-                                    cout << "*********** Has too much rentals?: " << status_toomuch2;
-                                    cout << "*********** Has rentals too long?: " << status_toolong2;
-                                    cout << "*********** Adress: " << custadress2;
-                                    cout << "*********** ZipCode: " << zipcode2;
-                                    cout << "*********** City: " << custcity2;
-                                    cout << "*********** Country: " << custcountry2;
+                                    cout << endl << "|        Name        |" << "|  ID  |" << "|Registration date|" << "|too_much?|" << "|too_long?|"
+                                        << "|        Adress        |" << "|ZipCode|" << "|     City     |" << "|     Country     |"
+                                        << endl << "-------------------------------------------------------------------------------------------------------------------------------------------";
+                                    cout << endl << "|" << setw(20) << custname2 << "||" << setw(6) << custid3 << "||" << setw(17) << registration_date2 << "||" << setw(9) << status_toomuch2
+                                        << "||" << setw(9) << status_toolong2 << "||" << setw(22) << custadress2 << "||" << setw(7) << zipcode2 << "||" << setw(14) << custcity2
+                                        << "||" << setw(17) << custcountry2 << "|" << endl;
                                     system("pause");
                                     system("cls");
                                     break;
