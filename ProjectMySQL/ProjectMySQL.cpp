@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <iomanip>
-//////////////MySQL header files/////////////////////////////////////////////////////////////////////////
+//////////////MySQL header files/////////////////////////////////////////////////////////////////////////////////////////////////////
 #include "mysql_connection.h"
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
@@ -20,14 +20,13 @@
 #include "date.h"
 
 using namespace std;
-//////////////Enter your DB data here////////////////////////////////////////////////////////////////////
+//////////////Enter your DB data here///////////////////////////////////////////////////////////////////////////////////////////////////
 const string server = "tcp://127.0.0.1:3306";
 const string username = "root";
 const string password = "";
-//////////////Main function Start////////////////////////////////////////////////////////////////////////
-
+//////////////Main function Start///////////////////////////////////////////////////////////////////////////////////////////////////////
 int main() {
-//////////////Attempt to connection with DB//////////////////////////////////////////////////////////////
+//////////////Attempt to connection with DB/////////////////////////////////////////////////////////////////////////////////////////////
     try {
         sql::Driver* driver;
         sql::Connection* con;
@@ -40,13 +39,13 @@ int main() {
         con = driver->connect(server, username, password);
 //////////////Here, enter your Schema name, which you created earlier in your DB////////////////////////////////////
         con->setSchema("librarydb");
-//////////////Create tables, their columns, indexes, links, etc. for our libraryDB (if not existed)//////////////////////////////
+//////////////Create tables, their columns, indexes, links, etc. for our libraryDB//////////////////////////////
         cout << "Creating libraryDB tables...\n\n";
         stmt = con->createStatement();
         stmt->execute("CREATE TABLE IF NOT EXISTS library_adress (library_adress_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, adress VARCHAR(50) NOT NULL, zipcode VARCHAR(25) NOT NULL, city VARCHAR(50) NOT NULL, country VARCHAR(50) NOT NULL);");
         stmt->execute("CREATE TABLE IF NOT EXISTS employee (employee_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(50) NOT NULL, position VARCHAR(50) NOT NULL, username VARCHAR(50) NOT NULL, password VARCHAR(64) NOT NULL);");        
         stmt->execute("CREATE TABLE IF NOT EXISTS employee_adress (employee_adress_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, adress VARCHAR(50) NOT NULL, zipcode VARCHAR(25) NOT NULL, city VARCHAR(50) NOT NULL, country VARCHAR(50) NOT NULL);");  
-        stmt->execute("CREATE TABLE IF NOT EXISTS customer (customer_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(50) NOT NULL, registration_date VARCHAR(50) NOT NULL, status_toomuch VARCHAR(25) DEFAULT 'No', status_toolong VARCHAR(25) DEFAULT 'No');");
+        stmt->execute("CREATE TABLE IF NOT EXISTS customer (customer_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(50) NOT NULL, registration_date VARCHAR(50) NOT NULL);");
         stmt->execute("CREATE TABLE IF NOT EXISTS customer_adress (customer_adress_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, adress VARCHAR(50) NOT NULL, zipcode VARCHAR(25) NOT NULL, city VARCHAR(35) NOT NULL, country VARCHAR(25) NOT NULL);");
         stmt->execute("CREATE TABLE IF NOT EXISTS book (book_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, isbn VARCHAR(50) NOT NULL, title VARCHAR(50) NOT NULL, author VARCHAR(50) NOT NULL, publisher VARCHAR(50) NOT NULL, genre VARCHAR(50) NOT NULL, quantity_available INT(10) NOT NULL);");
         stmt->execute("CREATE TABLE IF NOT EXISTS rental_status (rental_status_ID INT(10) PRIMARY KEY NOT NULL AUTO_INCREMENT, rent_customer_ID INT(10) NOT NULL, rent_book_ID INT(10) NOT NULL, rent_quantity INT(10) NOT NULL DEFAULT 0, rent_date VARCHAR(50), is_returned VARCHAR(25) DEFAULT 'No', return_quantity INT(10) DEFAULT 0, last_return_date VARCHAR(50), CONSTRAINT FOREIGN KEY (rent_book_ID) REFERENCES book (book_ID), CONSTRAINT FOREIGN KEY (rent_customer_ID) REFERENCES customer (customer_ID));");
@@ -59,7 +58,7 @@ int main() {
 
         int rentcustid1, rentbookid1, rentquantity1, returnbookid1, returnquantity1, rentid1, dbookid1;
         int count = 0, option1 = 0, quantity_available1 = 0, bookid3 = 0, custid3 = 0, bookid4 = 0, change2 = 0;
-
+//////////////Main menu with registration and login///////////////////////////////////////////////////////////////////////////////////
     loop1:
         cout << "Welcome to libraryDB. Please logIn or Register as employee:\n\n";
         cout << "*********** 1. LogIn\n"; 
@@ -171,6 +170,7 @@ int main() {
             Message();
             goto loop1;
         }
+//////////////Loop for library after succesfull login///////////////////////////////////////////////////////////////////////////////////
     libraryDB:
         cout << "*********** LibraryDB \n\n";
         cout << "*********** 1. Add New Book Rental\n";
@@ -190,6 +190,8 @@ int main() {
             do {
                 switch (option1) {
                 case 1:
+//////////////New book rental///////////////////////////////////////////////////////////////////////////////////
+
                     cout << "*********** Registration of a new book rental: \n";
                     cin.ignore();
                     cout << "*********** Book ID (required): ";
@@ -278,6 +280,7 @@ int main() {
                     system("pause");
                     system("cls");
                     goto libraryDB;
+//////////////New book return///////////////////////////////////////////////////////////////////////////////////
                 case 2:
                     cout << "*********** Registration of a new book return: \n";
                     cin.ignore();
@@ -368,6 +371,7 @@ int main() {
                     system("pause");
                     system("cls");
                     goto libraryDB;
+//////////////All books listing///////////////////////////////////////////////////////////////////////////////////
                 case 3:
                     cout << "*********** 1. List all the books\n";
                     cout << "*********** 2. Check exact book\n";
@@ -441,6 +445,7 @@ int main() {
                         goto libraryDB;
                     }
                     goto libraryDB;
+//////////////All customers listing///////////////////////////////////////////////////////////////////////////////////
                 case 4:
                     cout << "*********** 1. List all the customers\n";
                     cout << "*********** 2. Check exact customer\n";
@@ -452,22 +457,20 @@ int main() {
                         int option1 = stoi(optioncheck1);
                         if (option1 == 1) {
                             stmt = con->createStatement();
-                            res = stmt->executeQuery("SELECT customer_ID, name, registration_date, status_toomuch, status_toolong, adress, zipcode, city, country FROM customer, customer_adress ORDER BY name ASC");
-                            cout << endl << "|        Name        |" << "|  ID  |" << "|Registration date|" << "|too_much?|" << "|too_long?|"
+                            res = stmt->executeQuery("SELECT customer_ID, name, registration_date, adress, zipcode, city, country FROM customer, customer_adress ORDER BY name ASC");
+                            cout << endl << "|        Name        |" << "|  ID  |" << "|Registration date|"
                                 << "|        Adress        |" << "|ZipCode|" << "|     City     |" << "|     Country     |"
-                                << endl << "-------------------------------------------------------------------------------------------------------------------------------------------";
+                                << endl << "---------------------------------------------------------------------------------------------------------------------";
                             while (res->next()) {
                                 int customerid2 = res->getInt("customer_ID");
                                 string custname2 = res->getString("name");
                                 string registration_date2 = res->getString("registration_date");
-                                string status_toomuch2 = res->getString("status_toomuch");
-                                string status_toolong2 = res->getString("status_toolong"); 
                                 string custadress2 = res->getString("adress");
                                 string zipcode2 = res->getString("zipcode");
                                 string custcity2 = res->getString("city");
                                 string custcountry2 = res->getString("country");
-                                cout << endl << "|" << setw(20) << custname2 << "||" << setw(6) << customerid2 << "||" << setw(17) << registration_date2 << "||" << setw(9) << status_toomuch2
-                                    << "||" << setw(9) << status_toolong2 << "||" << setw(22) << custadress2 << "||" << setw(7) << zipcode2 << "||" << setw(14) << custcity2
+                                cout << endl << "|" << setw(20) << custname2 << "||" << setw(6) << customerid2 << "||" << setw(17) << registration_date2
+                                    << "||" << setw(22) << custadress2 << "||" << setw(7) << zipcode2 << "||" << setw(14) << custcity2
                                     << "||" << setw(17) << custcountry2 << "|" << endl;
                             }
                             delete stmt;
@@ -488,23 +491,21 @@ int main() {
                                 goto libraryDB;
                             }
                             stmt = con->createStatement();
-                            res = stmt->executeQuery("SELECT customer_ID, name, registration_date, status_toomuch, status_toolong, adress, zipcode, city, country FROM customer, customer_adress ORDER BY name ASC");
+                            res = stmt->executeQuery("SELECT customer_ID, name, registration_date, adress, zipcode, city, country FROM customer, customer_adress ORDER BY name ASC");
                             while (res->next()) {
                                 int customeriddb2 = res->getInt("customer_ID");
                                 if (custid3 == customeriddb2) {
                                     string custname2 = res->getString("name");
                                     string registration_date2 = res->getString("registration_date");
-                                    string status_toomuch2 = res->getString("status_toomuch");
-                                    string status_toolong2 = res->getString("status_toolong");
                                     string custadress2 = res->getString("adress");
                                     string zipcode2 = res->getString("zipcode");
                                     string custcity2 = res->getString("city");
                                     string custcountry2 = res->getString("country");
-                                    cout << endl << "|        Name        |" << "|  ID  |" << "|Registration date|" << "|too_much?|" << "|too_long?|"
+                                    cout << endl << "|        Name        |" << "|  ID  |" << "|Registration date|"
                                         << "|        Adress        |" << "|ZipCode|" << "|     City     |" << "|     Country     |"
-                                        << endl << "-------------------------------------------------------------------------------------------------------------------------------------------";
-                                    cout << endl << "|" << setw(20) << custname2 << "||" << setw(6) << custid3 << "||" << setw(17) << registration_date2 << "||" << setw(9) << status_toomuch2
-                                        << "||" << setw(9) << status_toolong2 << "||" << setw(22) << custadress2 << "||" << setw(7) << zipcode2 << "||" << setw(14) << custcity2
+                                        << endl << "---------------------------------------------------------------------------------------------------------------------";
+                                    cout << endl << "|" << setw(20) << custname2 << "||" << setw(6) << custid3 << "||" << setw(17) << registration_date2
+                                        << "||" << setw(22) << custadress2 << "||" << setw(7) << zipcode2 << "||" << setw(14) << custcity2
                                         << "||" << setw(17) << custcountry2 << "|" << endl;
                                     system("pause");
                                     system("cls");
@@ -523,13 +524,14 @@ int main() {
                         goto libraryDB;
                     }
                     goto libraryDB;
+//////////////All rentals listing///////////////////////////////////////////////////////////////////////////////////
                 case 5:
                     cout << "*********** All book rentals listed:\n\n";
                     stmt = con->createStatement();
                     res = stmt->executeQuery("SELECT * FROM rental_status ORDER BY rent_date ASC");
                     cout << endl << "|Rent  Date|" << "|Rental ID|" << "|Book ID|" << "|Customer ID|"
-                        << "|Rent Quantity|" << "|Is Returned?|" << "|Return Quantity|" << "|Last return date|" 
-                        << endl << "-------------------------------------------------------------------------------------------------------------";
+                        << "|Rent Quantity|" << "|Is Returned?|" << "|Return Quantity|" << "|Last return date|\n" << endl 
+                        << "-------------------------------------------------------------------------------------------------------------\n";
                     while (res->next()) {
                         int rentid3 = res->getInt("rental_status_ID");
                         int rentcust3 = res->getInt("rent_customer_ID");
@@ -540,7 +542,8 @@ int main() {
                         int retquantity3 = res->getInt("return_quantity");
                         string lastretdate3 = res->getString("last_return_date");
                         cout << endl << "|" << setw(10) << rentdate3 << "||" << setw(9) << rentid3 << "||" << setw(7) << rentbook3 << "||" << setw(11) << rentcust3
-                            << "||" << setw(13) << rentq3 << "||" << setw(12) << isreturned3 << "||" << setw(15) << retquantity3 << "||" << setw(16) << lastretdate3 << "|";
+                            << "||" << setw(13) << rentq3 << "||" << setw(12) << isreturned3 << "||" << setw(15) << retquantity3 << "||" << setw(16) << lastretdate3
+                            << "|";
                     }  
                     delete res;
                     delete stmt;
@@ -548,6 +551,7 @@ int main() {
                     system("pause");
                     system("cls");
                     goto libraryDB;
+//////////////New Customer Registration///////////////////////////////////////////////////////////////////////////////////
                 case 6:
                     cout << "*********** Registration of a new customer: \n";
                     cin.ignore();
@@ -583,6 +587,7 @@ int main() {
                     system("pause");
                     system("cls");
                     goto libraryDB;
+//////////////New Book Registration///////////////////////////////////////////////////////////////////////////////////
                 case 7:              
                     cout << "*********** Registration of a new book: \n";
                     cin.ignore();
@@ -643,6 +648,7 @@ int main() {
                     system("pause");
                     system("cls");
                     goto libraryDB;
+//////////////Book Modification///////////////////////////////////////////////////////////////////////////////////
                 case 8:
                     cout << "*********** Enter book ID: ";
                     cin >> bookid4s;
