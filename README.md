@@ -4,6 +4,7 @@ Brief instructions for the program:
 1. You need to install and connect MySQL to your development environment for the whole program to work. 
 
 https://www.mysql.com/downloads/
+
 Tutorial on how to connect MySQL with Visual Studio 2022:
 https://www.youtube.com/watch?v=a_W4zt5sR1M&ab_channel=BoostMyTool
 
