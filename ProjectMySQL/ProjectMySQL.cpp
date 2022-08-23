@@ -56,7 +56,7 @@ int main() {
                password1, hashpw, hashpw1, isbn, title, author, publisher, genre, quantity_available, date,
                returnbookid, returnquantity, rentid, rentcustid, rentbookid, rentquantity, bookid4s;
 
-        int rentcustid1, rentbookid1, rentquantity1, returnbookid1, returnquantity1, rentid1, dbookid1;
+        int rentcustid1, rentbookid1, rentquantity1, returnbookid1, returnquantity1, rentid1;
         int count = 0, option1 = 0, quantity_available1 = 0, bookid3 = 0, custid3 = 0, bookid4 = 0, change2 = 0;
 //////////////Main menu with registration and login///////////////////////////////////////////////////////////////////////////////////
     loop1:
@@ -212,7 +212,7 @@ int main() {
                     else {
                         Message(); goto libraryDB;
                     }
-                    count == 1;
+                    count = 1;
                     stmt = con->createStatement();
                     res = stmt->executeQuery("SELECT book_ID, quantity_available FROM book ORDER BY book_ID ASC");
                     while (res->next() && count == 1) {
