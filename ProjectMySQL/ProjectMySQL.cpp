@@ -1,5 +1,5 @@
 ﻿/*
-    Title			: C++ & MySQL LinkProject
+    Title			: C++ & MySQL LibraryProject
     Language		: C++
     Author			: Wojciech Jastrzebowski
     Date Created	: 13-08-2022
